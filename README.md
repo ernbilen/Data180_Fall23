@@ -48,7 +48,7 @@ Homework           |   25   |    25.0%   |
 ## Helpful Links ##
 
 * [R for Data Science](https://r4ds.had.co.nz/index.html) by Hadley Wickham, Garrett Grolemund
-* [Introduction to Statistical Learning](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf) by Gareth James,Daniela Witten,Trevor Hastie, Robert Tibshirani
+* [Introduction to Statistical Learning](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf) by Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani
 * [Notes on Machine Learning & Artificial Intelligence](https://chrisalbon.com) by Chris Albon
 * [The Effect ](https://theeffectbook.net) by Nick Huntington-Klein
 * [LaTeX Cheat Sheet](http://users.dickinson.edu/~richesod/latex/latexcheatsheet.pdf) and [an excellent tutorial](https://www.youtube.com/watch?v=NXW4cbHBthY) by Dave Richeson
