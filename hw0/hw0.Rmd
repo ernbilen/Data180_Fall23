@@ -1,0 +1,41 @@
+---
+title: "HW 0, Due Sep 5 beginning of class"
+subtitle: "Data 180, Professor Bilen"
+author: 
+  name: "Your Name"
+  email: "XXXX@dickinson.edu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document
+---
+
+Welcome!🎪 You will turn in your assignment by making changes on this R-Markdown file which is already saved on your Github repository after you accepted my invitation for the assignment. You will work on this file locally. (You can either manually download the files from the online repo, or "clone" it via "Code">"Open with Github Desktop" which downloads a local copy for you, and makes "committing" easier.) Once you finish and you are ready to submit, go to Github and "commit" + "push" to turn in your assignment. Make sure to submit your assignment **as a single Rmd file.** You don't need to send the HTML file that is generated after knitting.
+
+I will grade your assignment by opening your "hw0.Rmd" file in RStudio (in a directory containing all required data files), clicking "Knit HTML", reading the HTML output, and reading your "hw0.Rmd" file. Any code that fails to run due to errors receives a 0, so make sure to "Knit" your file and verify that all code runs without any issues before you submit.
+
+## Task 1
+
+This assignment is a practice assignment for you to gain practice working with R-Markdown and Github. Go ahead and run the cell below. Make sure it gets executed with no issues. Keep in mind, you can either click on "Run Current Chunk" on the right side of each code chunk (that little green play button ▶), or "Knit" button at the top, which runs everything and produces a nice viewable html file.
+
+```{r}
+print("Hello World!")
+```
+Go ahead and write an R code in the chunk below that prints your favorite movie. Here is my output:
+
+[1] "My favorite movie is Big Fish"
+
+```{r}
+print("My favorite movie is Big Fish!")
+```
+
+## Task 3
+
+It is now time to submit the assignment! Make sure that you have saved all your changes on this file by clicking on the little disk 💾 button on the top left. (Wow, a floppy disk! Have you seen one in person?) Now, go to Github Desktop App, or Github.com, (or Git Bash if you would like to run Git commands manually). 
+
+* If you are on the Github Desktop app, you will already see that the app recognized the changes you made on the file, and is asking you to "commit". Do this, and make sure to write a quick comment for what you have changed, (so that you'd remember what you did looking back 10 years from now!) You can write e.g. final update on hw0. After this, hit "push" and your assignment is now submitted! 
+
+* If you are on Github.com, upload your updated Rmd file in your repo by hitting "Add File" on top right and selecting/dropping your file. Add a comment for what you have changed, and hit "Commit changes". You are done! This automatically pushes your files at the same time. 
+
+Good work! 🏁
+
+
