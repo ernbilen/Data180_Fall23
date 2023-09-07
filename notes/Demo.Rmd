@@ -1,0 +1,130 @@
+```{r}
+# create an object named "X" that contains numbers
+# from 1 through 4
+X = c(1,2,3,4)
+X
+
+# equivalent, but used more widely 
+X <- c(1,2,3,4)
+X
+
+# to check what objects you have in your environment
+ls()
+
+# to remove an object
+rm(X)
+
+# what if you need help with a function?
+?rm
+
+# basic calculations
+7+3*2
+
+cos(pi/4)
+
+# what is my working directory?
+getwd()
+
+# system info?
+Sys.info()
+
+# Create new objects
+Y <- 3.6
+Z <- "34"
+Z <- 34
+K <- 2 + 3i
+
+typeof(Z)
+
+length(X)
+```
+
+
+```{r}
+# create a vector Y that has five 3's.
+#Y <- c(3,3,3,3,3)
+Y <- rep(3,5)
+length(Y)
+```
+
+
+```{r}
+# sequence of numbers
+seq(1,11,2)
+```
+
+```{r}
+X <- c(1,2,3,4)
+names(X) <- c('first','second','third','fourth')
+names(X)[3] <- "THIRD"
+X
+```
+
+
+```{r}
+# shortcut
+1:8
+```
+
+```{r}
+X <- matrix(1:8,nrow=2,byrow = T)
+#X
+# row 2, col 3
+#X[2,3]
+# entire row 2
+#X[2,]
+#X[,3:4]
+X
+# get rid of col 2
+X[,-2]
+# get rid of col 2 and 4
+X[,-c(2,4)]
+```
+```{r}
+dim(X)
+```
+
+```{r}
+# custom row and col names
+rownames(X) <- c('first row','second row')
+colnames(X) <- c('col1','col2','col3','col4')
+X
+```
+
+```{r}
+sqrt(X)
+```
+
+```{r}
+# create a list X
+X <- list(c('first row','second row'), matrix(1:8,nrow=2,byrow=T), rep(3,5))
+X
+
+# second element of the first element on the list
+#X[[1:2]]
+#X[[1]][2]
+
+# return col3 from the second element on the list
+X[[2]][,3]
+```
+
+```{r}
+# name elements of a list
+names(X) <- c('vec','mat','rep')
+X
+```
+```{r}
+X[[1]]
+X$vec
+```
+
+```{r}
+# Factor variables in R
+Treatment <- c('Drug','Drug','Drug','Placebo','Placebo','Placebo')
+# define the object Treatment, overwrite
+Treatment <- factor(Treatment)
+print.default(Treatment)
+```
+
+
+
