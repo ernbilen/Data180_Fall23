@@ -2,12 +2,12 @@
 # create an object named "X" that contains numbers
 # from 1 through 4
 X = c(1,2,3,4)
-X
-
-# equivalent, but used more widely 
+# equivalent, but used more widely among R-users: the assignment operator, <-
 X <- c(1,2,3,4)
 X
+```
 
+```{r}
 # to check what objects you have in your environment
 ls()
 
@@ -21,7 +21,9 @@ rm(X)
 7+3*2
 
 cos(pi/4)
+```
 
+```{r}
 # what is my working directory?
 getwd()
 
@@ -62,7 +64,7 @@ X
 
 
 ```{r}
-# shortcut
+# shortcut to create numbers between 1 and 8
 1:8
 ```
 
@@ -125,6 +127,110 @@ Treatment <- c('Drug','Drug','Drug','Placebo','Placebo','Placebo')
 Treatment <- factor(Treatment)
 print.default(Treatment)
 ```
+```{r}
+# Factor variables in R
+Treatment <- c('Drug','Drug','Drug','Placebo','Placebo','Placebo')
+# define the object Treatment, overwrite
+Treatment <- factor(Treatment,levels=c('Placebo','Drug'))
+#print.default(Treatment)
+Treatment <- as.integer(Treatment) -1
+Treatment
+Age <- c(17,15,25,30,5,55)
+Age
+my_df <- data.frame(my_Treatment=Treatment,Age)
+colnames(my_df)
+# return the age column in different ways
+my_df$Age
+my_df[,2] # the first number for row position, second for col pos
+```
+
+```{r}
+Number <- c(1, 4, 2, 5)
+Letter <- c('a', 'r', 'g', 'f')
+Truth <- c(T, F, F, T)
+
+demo_df <- data.frame(Number, Letter, Truth)
+demo_df
+```
+
+```{r}
+demo_df <- data.frame(Number=c(1,4,2,5), Letter=c('a','r','g','f'), Truth=c(T,F,F,T))
+demo_df
+# row 3, col 2
+demo_df[3,2]
+# same value, but instead uses "Letter"
+demo_df$Letter[3]
+# equivalent, but does not use "$"
+demo_df[3,"Letter"]
+
+# typeof() function returns the type of an object
+typeof(demo_df$Number)
+typeof(demo_df$Letter)
+typeof(demo_df$Truth)
+```
+
+```{r}
+# Functions
+X<- c(1,2,3,4)
+X
+# returns the objects in memory
+ls()
+
+# calculate the mean of a set numbers
+mean(X)
+# equivalent to
+(X[1]+X[2]+X[3]+X[4])/4
+
+
+X[3] <- NA
+X
+mean(X,na.rm = T)
+
+mean <- c(1,2,3)
+mean
+find('mean')
+rm(mean)
+find('mean')
+mean
+
+#fix(say_hi)
+
+say_hi <- function(){
+  print('Hello World!')
+}
+
+say_hi()
+
+# conditions in R
+my_number <- -5
+if(my_number < 0){
+  print('your number is negative!')
+} else if(my_number > 0){
+  print('your number is positive!')
+} else {
+  print('your number is zero!')
+}
+
+# create a function named my_func() that checks if a number is positive,
+# negative, or zero, and prints the output
+my_func <- function(number){
+  if(number <0){
+    print('your number is negative!')
+  } else if(number>0){
+    print('your number is positive!')
+  } else {
+      print('your number is zero!')
+  }
+}
+
+my_func(0)
+
+# create a function named bmi_calculator that takes in two inputs: weight in kg
+# and height in m, and returns the bmi of a person where bmi = kg/m^2
+
+
+```
+
 
 
 
