@@ -2,12 +2,12 @@
 # create an object named "X" that contains numbers
 # from 1 through 4
 X = c(1,2,3,4)
-X
-
-# equivalent, but used more widely 
+# equivalent, but used more widely among R-users: the assignment operator, <-
 X <- c(1,2,3,4)
 X
+```
 
+```{r}
 # to check what objects you have in your environment
 ls()
 
@@ -21,7 +21,9 @@ rm(X)
 7+3*2
 
 cos(pi/4)
+```
 
+```{r}
 # what is my working directory?
 getwd()
 
