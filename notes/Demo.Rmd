@@ -1,45 +1,3 @@
-```{r}
-# create an object named "X" that contains numbers
-# from 1 through 4
-X = c(1,2,3,4)
-# equivalent, but used more widely among R-users: the assignment operator, <-
-X <- c(1,2,3,4)
-X
-```
-
-```{r}
-# to check what objects you have in your environment
-ls()
-
-# to remove an object
-rm(X)
-
-# what if you need help with a function?
-?rm
-
-# basic calculations
-7+3*2
-
-cos(pi/4)
-```
-
-```{r}
-# what is my working directory?
-getwd()
-
-# system info?
-Sys.info()
-
-# Create new objects
-Y <- 3.6
-Z <- "34"
-Z <- 34
-K <- 2 + 3i
-
-typeof(Z)
-
-length(X)
-```
 
 
 ```{r}
@@ -227,10 +185,70 @@ my_func(0)
 
 # create a function named bmi_calculator that takes in two inputs: weight in kg
 # and height in m, and returns the bmi of a person where bmi = kg/m^2
+bmi_calculator <- function(height, weight){
+  return(weight/height^2) # returns the output
+}
+bmi_calculator(1.7, 60)
 
+# create a function named bmi_prompt that takes in weight and kg as inputs and prints the categories for the bmi calculated
+# where <18.5 is underweight
+# between 18.5 and 25 is normal
+# between 25 and 30 is overweight
+# over 30 is obese
+bmi_prompt <- function(weight, height) {
+  bmi <- bmi_calculator(height,weight)
+  if  (bmi<18.5) {
+    print("underweight")
+  } else if (18.5 <= bmi & bmi <= 25) {
+    print("healthy")
+  } else if (25 <= bmi & bmi <=30) {
+    print("overweight")
+  }
+  else {
+    print("obese")
+  }
+  return(bmi)
+}
 
+bmi_prompt(30,1.7)
 ```
 
+```{r}
+# for-loop
+for (i in 1:3){
+  print(i)
+}
+```
 
+```{r}
+# for loop with vector of characters
+myVec <- c("R","is","fun")
+for (word in myVec){
+  print(word)
+}
+```
+
+```{r}
+# library MASS contains toy datasets
+library(MASS)
+# let's call the Cars93 dataset
+data(Cars93)
+# head() displays the first 6 rows by default
+head(Cars93)
+
+nrow(Cars93)
+ncol(Cars93)
+
+rownames(Cars93)
+
+# returns the Price col
+Cars93$Price
+
+# returns cars with 09 < 10 and all cols
+Cars93[Cars93$Price < 10,]
+
+# returns cars with Prise < 10 and only the type col
+Cars93[Cars93$Price < 10, 'Type']
+```
 
 
