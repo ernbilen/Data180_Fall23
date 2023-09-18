@@ -1,0 +1,292 @@
+---
+title: "Lecture 4 cont: ggplot2"
+output: 
+  html_document
+---
+
+
+```{r echo=FALSE}
+# Custom options for knitting
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  error = FALSE, 
+  collapse = TRUE,
+  comment = "#",
+  fig.height = 5,
+  fig.width = 5,
+  fig.align = "center",
+  cache = FALSE
+) 
+```
+
+# ggplot2 R package for Data Visualization  
+
+
+* ggplot is a function in the [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) package and is based on **The Grammar of Graphics** by Leland Wilkinson, and the [lattice](https://cran.r-project.org/web/packages/lattice/index.html) package
+* ggplot is designed to work in a  *layered fashion*, starting with a layer showing the raw data then adding layers of annotation and statistical summaries 
+
+## ggplot() function
+Let's look at an example **diamonds** data that comes with the [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) package.  But first, let's load the the package to our session using the **library()** function.  If you have not yet installed the ggplot2 package, you should do this first (you only have to do this once). Recall the magic command is: install.packages("")
+
+
+```{r echo=FALSE, warnings=FALSE}
+#install.packages("ggplot2") # only need to install once
+library(ggplot2)
+```
+
+Some information about the **diamonds** dataset :
+
+* ~54,000 round diamonds from http://www.diamondse.info/
+* Variables:
+	+ carat, colour, clarity, cut
+	+ total depth, table, depth, width, height
+	+ price 
+
+* A question of interest: What is the relationship between *carat* and *price*, and how does it depend on other factors?
+
+
+## Data on diamonds 
+
+Load the **diamonds** data set, get the dimensions, and look at the first few lines
+
+```{r, warnings=FALSE}
+data(diamonds, package="ggplot2")
+dim(diamonds)
+head(diamonds)
+```
+
+
+## Refresher: Default R plot of price versus carat
+
+Recall using the *default settings* with the **plot()** function
+```{r, fig.height=5, fig.width=5, fig.cap="Here is a caption."}
+plot(diamonds$carat,diamonds$price) # x-variable first in this notation
+# or
+plot(price~carat, data=diamonds) # an alternative way: this is y against x
+```
+
+Note: If you want to change the figure size and add a figure caption in Rmd, you can specify the fig.height, fig.width, fig.cap options inside curly brackets at the beginning of your R code chunk. See the full set of options [here](https://rpubs.com/Lingling912/870659) Bonus: If you don't want to set the size each time you generate a plot, you can insert the options, e.g., fig_width fig_height in your YAML chunk at the beginning of your Rmd file.
+
+## Default ggplot price versus diamonds
+
+Here comes ggplot! Using the *default settings* in **ggplot()**
+
+```{r}
+theme_set(theme_bw())
+library(ggplot2)
+ggplot(diamonds, aes(x=carat,y=price)) + 
+                          geom_point() + 
+                          labs(y = 'price $', x = 'carat value')
+```
+
+## At first glance
+
+* The *default* option in **ggplot** looks nicer!
+* **ggplot**'s syntax looks weird, especially if you're not very familiar with **lattice**
+* Note: It is possible to manipulate the **plot()** options to get a plot similar to ggplot (and maybe even a better one), but that would require a lot of extra coding!!
+* The ggplot *syntax* also makes plotting more  **structured** and  easier to update 
+
+
+## ggplot syntax
+
+ggplot(diamonds, aes(x=carat,y=price)) + geom_point()
+
+ 
+*The first component (before the "+") calls the ggplot function, and the data with x-y varibles.
+* The second component (after the first "+") tells ggplot what type of plot you want, e.g., geom_bar/geom_hist/geom_boxplot
+* Possible to add other lines for more customization on the plot, e.g., title, label for the axes, etc.
+** https://rkabacoff.github.io/datavis/  a whole book on ggplot2 customization!!
+
+
+##  geom_boxplot
+Very easy to switch to a boxplot. We can use  **geom_boxplot** to create boxplots when one variable is continuous and the other is a factor. 
+
+```{r,}
+ggplot(diamonds, aes(x=cut,y=price)) + geom_boxplot()
+```
+
+
+## Changing the aesthetics
+
+You can control the aesthetics of each layer, e.g.  *colour*, *size*, *shape*, *alpha* (opacity) etc.
+
+```{r}
+ggplot(diamonds, aes(carat, price)) + geom_point(col = "blue")
+```
+
+
+## A few more examples
+Changing the alpha level
+
+```{r}
+ggplot(diamonds, aes(x=carat,y=price)) + geom_point(alpha = 0.2)
+```
+
+
+## A few more examples
+
+Changing the point size
+
+```{r}
+ggplot(diamonds, aes(x=carat,y=price)) + geom_point(size = 0.2)
+
+```
+
+
+## A few more examples
+
+Changing the shape and the point size
+```{r}
+ggplot(diamonds, aes(x=carat,y=price)) + geom_point(shape = 2,size=0.4)
+```
+
+ 
+## Combining layers
+The real power of **ggplot** is its ability to combine layers
+```{r}
+ggplot(diamonds, aes(x=carat,y=price)) + geom_point(size = 0.2) +
+  geom_smooth()
+```
+
+
+## Transformations
+
+In this case (and many other situations) a log transformation may allow for the relationships between variables to be clearer. Can use **coord_trans()**
+
+```{r}
+ggplot(diamonds, aes(carat, price)) + geom_point(size = 0.5) +
+coord_trans(x = "log10", y = "log10")
+```
+
+## Adding information for a third variable
+We can color by a *factor* variable (not that it's useful for this example!)
+
+```{r}
+ggplot(diamonds, aes(carat, price, colour=color)) + geom_point() + 
+    coord_trans(x = "log10", y = "log10")
+```
+
+
+Can also color by a  *continuous* variable (not really useful for this example too, but here it is so you are familiar with the syntax:)
+```{r}
+ggplot(diamonds, aes(carat, price, colour=depth)) + geom_point() + 
+    coord_trans(x = "log10", y = "log10")
+```
+
+## Conditional plots:
+
+In some cases, it may be more useful to get separate plots for each category of the third variable, to understand conditional relationships 
+
+```{r}
+ggplot(diamonds, aes(carat, price)) + geom_point() +
+  facet_wrap(~color, ncol=4)
+```
+
+
+Alternatively, you can use **facet_grid**, which also allows more than 1 conditioning variable (tables of plots)
+```{r, fig.height=3, fig.width=8}
+ggplot(diamonds, aes(carat, price)) + geom_point() +
+ facet_grid(~color, labeller=label_both)
+```
+
+
+## A final note about syntax
+There are actually many ways to get the same plot! The following commands will produce the same plot:
+
+* ggplot(diamonds, aes(price, carat)) + geom_point()
+* ggplot() + geom_point(aes(price, carat), diamonds)
+* ggplot(diamonds) + geom_point(aes(price, carat))
+* ggplot(diamonds, aes(price)) + geom_point(aes(y = carat))
+* ggplot(diamonds, aes(y=carat)) + geom_point(aes(x = price))
+
+## A final summary of syntax:
+
+```{r}
+ggplot(diamonds) + geom_point(aes(price, carat))
+```
+
+
+## Histograms
+Let's make a histogram.
+```{r}
+ggplot(diamonds, aes(depth)) + geom_histogram()
+```
+
+Notice the difference in the **aes** call; **boxplot** is really designed for multiple categories!
+
+## Histograms
+Tthe *default options* in **histogram** may not be sensible, and you often need to adjust the **binwidth** and **xlim**
+
+```{r}
+ggplot(diamonds, aes(depth)) + geom_histogram(binwidth=0.2) + xlim(56,67)
+```
+
+## Boxplots with multiple categories
+A better use of **boxplot** is when we want to compare distributions of a quantitative variable across categories of a factor variable, as previously discussed
+
+```{r}
+ggplot(diamonds, aes(cut, depth)) + geom_boxplot()
+```
+
+
+
+## Histograms with multiple categories
+We can also get multiple histograms, though we need to either display them separately (less useful when comparing)
+```{r}
+ggplot(diamonds, aes(depth)) + geom_histogram(binwidth = 0.2) + 
+    facet_wrap(~cut) + xlim(56, 67)
+```
+
+## Overlaying Histograms
+Or, you can overlay the historgrams 
+```{r}
+ggplot(diamonds, aes(depth, fill=cut)) + 
+    geom_histogram(binwidth=0.2,colour="grey50",alpha=.4,position="identity") + xlim(56,67)
+```
+
+## Cheat sheet
+We are covering only a few of the many plot types that can be greated with the **ggplot2** package.
+
+For a more comprehensive view of ggplot2, take a look at the ggplot2 [Cheat sheet](https://r4ds.had.co.nz/data-visualisation.html)
+
+
+## Maps
+### load United States state map data
+```{r}
+#install.packages('maps') # you only need to do this once. maps package includes various maps that we can use.
+#install.packages('sf') # you only need to do this once
+library(maps)     # Provides latitude and longitude data for various maps
+library(sf)
+# read the state population data
+MainStates <- map_data("state")
+
+#plot all states with ggplot2, using black borders and light blue fill
+ggplot() + 
+  geom_polygon( data=MainStates, aes(x=long, y=lat, group=group),
+                color="black", fill="lightblue" ) +
+                coord_sf(crs = st_crs(4326)) # projection
+
+```
+
+
+```{r}
+library(mapview)
+library(sf)
+states <- st_read('/Users/bilene/Downloads/us-states/us-states.shp')
+# you can select the map styles (alternatively: map.types = "Esri.WorldImagery" add option inside mapview)
+# mapviewOptions(basemaps = c("OpenStreetMap","Esri.WorldImagery","OpenTopoMap"))
+mapview(states,zcol='population', col.regions = blues9)
+```
+
+```{r}
+map1 <- mapview(states[states$NAME=='Pennsylvania',], col.regions = blues9, layer.name = "PA") 
+map2 <- mapview(states[states$NAME=='South Carolina',], col.regions = blues9, layer.name = "SC")
+# use the mapview options to turn off legends, hover etc: legend = FALSE, label = FALSE, popup = FALSE
+#install.packages('leafsync')
+library(leafsync)
+sync(map1, map2)
+#or 
+#mapviewOptions(basemaps = c("OpenStreetMap"))
+#map1 | map2
+```
