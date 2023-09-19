@@ -1,0 +1,125 @@
+---
+title: "HW 1"
+subtitle: "Data 180, Professor Bilen"
+author: 
+  name: "Answer key"
+  email: "XXXX@dickinson.edu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document
+---
+Make sure that you have accepted the hw invitation link, and working with your clone repository.
+
+**Due date:** September 19 beginning of class.
+
+**Reminder:** You can insert R code in your Rmd file as a chunk in the following way:
+```{r}
+# Your code goes here
+```
+Make sure to insert a chunk for each (sub)section of the assignment.
+
+## Preliminary Task
+Go to [datacamp.com](https://datacamp.com) and complete the tutorial "Introduction to R".
+
+
+## Task 1
+a) Store the data below in a data frame object named `my_df`.
+
+
+|Person | Preference|
+|:------|:----------|
+|Alice | Twitter |
+| Bob | Facebook |
+| Charlie | Twitter |
+| Denise | Instagram |
+| Erin | Facebook |
+| Frank | Twitter |
+| Gisele | Twitter |
+| Harry | Instagram |
+
+```{r}
+my_df <- data.frame(Person=c('Alice','Bob','Charlie','Denise','Erin','Frank','Gisele','Harry'),Preference=c('Twitter','Facebook','Twitter','Instagram','Facebook','Twitter','Twitter','Instagram'))
+my_df
+```
+
+b) What are the dimensions of `my_df`?
+```{r}
+dim(my_df)
+```
+
+`my_df` has 8 rows, 2 columns.
+
+c) Write R code that counts the total number of users.
+```{r}
+# Given each row corresponds to a unique unit,
+nrow(my_df)
+```
+
+d) Write R code that counts the total number of users who prefer Twitter.
+```{r}
+# This requires subsetting. We need a way to figure out which rows have Twitter preference:
+my_df$Preference == 'Twitter' # This returns a boolean vector, i.e. TRUE when preference is Twitter. We can use this vector for subsetting:
+my_df[my_df$Preference=='Twitter',] # Notice we want to only subset rows, so don't forget to put a comma indicating that we want to be returned all the columns.
+```
+
+e) Write R code that returns what Gisele prefers.
+```{r}
+# It's fine if you did the following:
+my_df[7,]
+# A more generalizable approach would be:
+my_df[my_df$Person=='Gisele',]
+```
+
+## Task 2
+a) Create a vector named `my_vec` that includes all integers from 1 to 10 (inclusive).
+```{r}
+my_vec = 1:10
+```
+
+b) Replace the second element in `my_vec` with the number `99`.
+```{r}
+my_vec[2] = 99
+```
+
+c) Write a function called `my_func` that prints `This element is greater than 5!` if an element in `myvec` is greater than 5, and `This element is NOT greater than 5!` otherwise.
+```{r}
+# Write a function that takes an integer as an input, returns the correct prompt depending on the number being < or > 5.
+my_func = function(num){
+  if(num>5){
+    print('This element is greater than 5!')
+  } else{
+    print('This element is NOT greater than 5!')
+  }
+}
+# Test the function
+my_func(my_vec[1])
+my_func(my_vec[2])
+my_func(my_vec[3])
+```
+
+## Task 3
+a. Write a function named `get_fibonacci` that returns the n'th value in the [fibonacci sequence](https://www.cuemath.com/numbers/fibonacci-sequence). For example, `get_fibonacci(5)` should return 5; `get_fibonacci(7)` should return 13 and so on. ***Hint:** It is possible to call the same function from inside it. E.g., you can call `get_fibonacci()` from inside `get_fibonacci()`. Like the movie inception!*
+
+```{r}
+get_fibonacci = function(num){
+  
+  if(num==0){
+    return(0)
+  } else if (num==1){
+    return(1)
+  } else {
+    return(get_fibonacci(num-1) + get_fibonacci(num-2))
+  }
+}
+get_fibonacci(5)
+get_fibonacci(7)
+```
+
+b. Using your function in part (a), find and return the 19th value in the fibonacci sequence.
+```{r}
+get_fibonacci(19)
+```
+<br>
+You are done! 🏁 Don't forget to `commit` and `push` your .Rmd file to your Github clone repository before the due date.
+<br>
+
