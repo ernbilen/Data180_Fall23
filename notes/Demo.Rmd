@@ -251,4 +251,10 @@ Cars93[Cars93$Price < 10,]
 Cars93[Cars93$Price < 10, 'Type']
 ```
 
+```{r}
+# import data in R
+df <- read.csv('https://raw.githubusercontent.com/ernbilen/Data180_Fall23/main/data/majors.csv')
+head(df)
+```
+
 
