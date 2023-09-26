@@ -1,0 +1,26 @@
+---
+title: "ggplot2"
+output: html_document
+date: "2023-09-26"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+#install.packages('ggplot2')
+library(ggplot2)
+#data(diamonds)
+#??diamonds
+# scatterplot of price and carat
+#plot(price~carat,data=diamonds)
+ggplot(diamonds, aes(x=carat,y=price)) +
+                  geom_point() +
+                  theme_classic()
+
+```
