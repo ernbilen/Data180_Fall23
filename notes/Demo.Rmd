@@ -257,4 +257,34 @@ df <- read.csv('https://raw.githubusercontent.com/ernbilen/Data180_Fall23/main/d
 head(df)
 ```
 
+```{r}
+# barplot for Airbags (frequency distribution)
+barplot(table(Cars93$AirBags),ylab = 'count', xlab = 'Airbag Status', col = 'yellow', cex.lab=1.5, cex.names = 1.2)
+
+# colors() # shows the possible colors you can use
+```
+
+
+```{r}
+# barplot for Airbags (frequency distribution)
+barplot(table(Cars93$AirBags)/nrow(Cars93),ylab = 'proportion', xlab = 'Airbag Status', col = 'yellow', cex.lab=1.5, cex.names = 1.2)
+```
+
+
+
+
+```{r}
+# two-way frequency graph
+# make sure that both variables are categorical
+barplot(table(Cars93$AirBags,Cars93$Origin),beside = T,col=c('yellow','blue','red'), ylim = c(0,35))
+legend(x=3.5,y=35,title = 'Airbag Status', legend = sort(unique(Cars93$AirBags)),fill = c('yellow','blue','red'))
+```
+
+```{r}
+# two-way frequency graph, example 2
+# make sure that both variables are categorical
+barplot(table(Cars93$Type,Cars93$Origin),beside = T,col=c(1,2,3,4,5,6), ylim = c(0,30))
+legend(x=4.2,y=30,title = 'Car type', legend = sort(unique(Cars93$Type)),fill = c(1,2,3,4,5,6))
+```
+
 
