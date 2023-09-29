@@ -11,7 +11,7 @@ output:
 
 Make sure that you have accepted the hw invitation link, and working with your clone repository.
 
-**Due date:** October 6 beginning of class.
+**Due date:** October 5 beginning of class.
 
 **Reminder:** You can insert R code in your Rmd file as a chunk in the following way:
 ```{r}
