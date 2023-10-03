@@ -78,3 +78,48 @@ ggplot(diamonds,aes(depth,fill=cut)) +
 ```
 
 
+```{r}
+# conditional scatter plot with cars93
+ggplot(Cars93, aes(x= Price, y = Horsepower, col = Origin)) +
+  geom_point(size = 2) +
+  labs(x = 'Price ($)', y = 'Horsepower') +
+  facet_wrap(~Origin)
+```
+
+```{r}
+# conditional histogram with cars93
+ggplot(Cars93, aes(Price)) +
+  geom_histogram(bins = 9) + 
+  facet_wrap(~Type, nrow = 1) + 
+  labs(title = 'Distribution of Price over Type', x = 'Price', y ='Count')
+```
+
+```{r}
+# Making maps with ggplot2
+#install.packages('maps')
+#install.packages('sf')
+
+library(maps)
+library(sf)
+states <- map_data("state")
+
+# just to check how many rows we have for Alabama
+nrow(states[states$region == 'alabama',])
+
+# aside
+#my_vec <- 5:10
+#my_vec
+
+# first element of my_vec
+#my_vec[1]
+
+# return elements greater than 7
+#my_vec[my_vec>7]
+
+# return first row of states df
+#states[1,]
+
+ggplot() + geom_polygon(data=states,aes(x=long,y=lat)) + coord_sf(crs=str_crs(4326))
+```
+
+
