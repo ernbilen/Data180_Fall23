@@ -282,7 +282,7 @@ mapview(states,zcol='population', col.regions = blues9)
 ```{r}
 map1 <- mapview(states[states$NAME=='Pennsylvania',], col.regions = blues9, layer.name = "PA") 
 map2 <- mapview(states[states$NAME=='South Carolina',], col.regions = blues9, layer.name = "SC")
-# use the mapview options to turn off legends, hover etc: legend = FALSE, label = FALSE, popup = FALSE
+# use the mapview options to turn off legends, hover etc: legend = FALSE, label = FALSE, popup = FALSE or more options such as label=paste('NAME:',states$NAME,'<br> avg. age:',states$age) are possible.
 #install.packages('leafsync')
 library(leafsync)
 sync(map1, map2)
