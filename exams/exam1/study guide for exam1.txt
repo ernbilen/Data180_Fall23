@@ -1,0 +1,49 @@
+Data 180 **Study guide for Exam 1:**
+This list is created to help you study for exam 1. 
+*Disclaimer:* The topics listed here may not be fully comprehensive. You should refer to
+the notes posted on GitHub, as they form the main source material.
+
+Topic 1: Data Science
+What is Data Science?
+What do data scientists do with data on a regular basis? 
+Compare supervised/unsupervised learning.
+What is Git and GitHub? Why do data scientists use it?
+Where do data come from?
+Compare parameter/statistic.
+Be able to find unit of observation given a data set, i.e. identify what each row shows observations from.
+Identify if a variable is categorical (nominal/ordinal) or numeric (discrete/cont)
+What is a data matrix? What is a data frame?
+What are the main measures of center? Explain how each is calculated and why some are more appropriate than others in certain settings.
+What is skewness? Identify the direction of skewness given a distribution.
+
+Topic 2: R
+Be able to,
+Create a scalar, vector, list, dataframe object.
+Declare a factor variable with custom levels.
+Access column(s) of a dataframe.
+Access a row or certain rows of an object using position and/or column name.
+Make operations on a vector or matrix, e.g. multiply/divide by a scalar, replace/add elements.
+Create a custom function that can accomplish a given task/operation.
+Construct if/else statements.
+Use a for loop to achieve a task/operation.
+Display the first n rows of a data frame object.
+Return the shape, i.e., the number of rows, columns of a data frame.
+Return unique values/levels of a variable.
+Return basic statistics (mean, median..) in a data frame.
+
+Topic 3: Visualization
+What is bar graph, pie chart, histogram, scatterplot? Identify for what variable type(s) each can be used.
+Create the graphs above using base R.
+Create the graphs above using ggplot2.
+Find the rule of thumb for the number of bars for a histogram. Implement it in R.
+Use conditional coloring in base R and ggplot2.
+Create multiple graphs side by side using conditional in ggplot2.
+Customize axis labels, range, title, graph color, label size in base R and ggplot2.
+What is geospatial data? What is a shape file?
+What is a polygon? What is a point on a map?
+How does information on drawing a map with borders recorded in a geospatial dataframe?
+What is a coordinate reference system?
+What are latitude and longitude? Where do they appear on a map?
+Make a map using ggplot2. Customize its color using a single color or information from a column.
+Make an interactive map using mapview. Be able to customize its color palette and the information displayed with mouse hovering.
+Make two side by side interactive maps of different locations using mapview.
