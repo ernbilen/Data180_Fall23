@@ -13,113 +13,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ## R Markdown
 
 ```{r}
-# fits through a smooth curve
 #install.packages('ggplot2')
 library(ggplot2)
-theme_set(theme_bw())
 #data(diamonds)
 #??diamonds
 # scatterplot of price and carat
 #plot(price~carat,data=diamonds)
 ggplot(diamonds, aes(x=carat,y=price)) +
-                 geom_point(col='black',alpha=.2,size=1,shape=2) +
-                 labs(y='price, $',x='carat value',title='Here is a title',subtitle='Here is a subtitle', caption='Taken from X et al (202X)') +
-                  geom_smooth()
+                  geom_point() +
+                  theme_classic()
+
 ```
-
-```{r}
-# transforming axes
-ggplot(diamonds, aes(x=carat,y=price)) +
-                 geom_point(col='black',alpha=.2,size=1,shape=1) +
-                 labs(y='log of price, $',x='log of carat value',title='Here is a title',subtitle='Here is a subtitle', caption='Taken from X et al (202X)') +
-        coord_trans(x='log10',y='log10')
-                 
-```
-
-```{r}
-# add information from a third variable (categorical)
-ggplot(diamonds, aes(x=carat,y=price,col=color)) +
-                 geom_point(size=1) +
-                 labs(y='price, $',x='carat value',title='Here is a title',subtitle='Here is a subtitle', caption='Taken from X et al (202X)')
-```
-
-```{r}
-# add information from a third variable (continuous)
-ggplot(diamonds, aes(x=carat,y=price,col=table)) +
-                 geom_point(size=1) +
-                 labs(y='price, $',x='carat value',title='Here is a title',subtitle='Here is a subtitle', caption='Taken from X et al (202X)')
-```
-
-```{r}
-# conditional plots
-ggplot(diamonds, aes(x=carat,y=price)) +
-                 geom_point(size=1) +
-                 labs(y='price, $',x='carat value',title='Here is a title',subtitle='Here is a subtitle', caption='Taken from X et al (202X)') +
-  facet_wrap(~color,nrow=1,labeller=label_both)
-```
-
-```{r}
-# Make a histogram in ggplot
-ggplot(diamonds,aes(depth)) +
-          geom_histogram(binwidth =.2)
-```
-
-```{r}
-# Make multiple histograms side by side
-ggplot(diamonds,aes(depth)) +
-          geom_histogram(bins=100) +
-          facet_wrap(~cut,nrow=1)
-```
-
-```{r}
-# Make multiple histograms in one graph
-ggplot(diamonds,aes(depth,fill=cut)) +
-          geom_histogram(bins=100,color='black',alpha=.4,position = 'identity')
-```
-
-
-```{r}
-# conditional scatter plot with cars93
-ggplot(Cars93, aes(x= Price, y = Horsepower, col = Origin)) +
-  geom_point(size = 2) +
-  labs(x = 'Price ($)', y = 'Horsepower') +
-  facet_wrap(~Origin)
-```
-
-```{r}
-# conditional histogram with cars93
-ggplot(Cars93, aes(Price)) +
-  geom_histogram(bins = 9) + 
-  facet_wrap(~Type, nrow = 1) + 
-  labs(title = 'Distribution of Price over Type', x = 'Price', y ='Count')
-```
-
-```{r}
-# Making maps with ggplot2
-#install.packages('maps')
-#install.packages('sf')
-
-library(maps)
-library(sf)
-states <- map_data("state")
-
-# just to check how many rows we have for Alabama
-nrow(states[states$region == 'alabama',])
-
-# aside
-#my_vec <- 5:10
-#my_vec
-
-# first element of my_vec
-#my_vec[1]
-
-# return elements greater than 7
-#my_vec[my_vec>7]
-
-# return first row of states df
-#states[1,]
-
-ggplot() + geom_polygon(data=states,aes(x=long,y=lat)) + coord_sf(crs=str_crs(4326))
-```
-
-
