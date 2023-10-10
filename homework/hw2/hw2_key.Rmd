@@ -1,0 +1,119 @@
+---
+title: "HW 2: Visualization, Base R"
+subtitle: "Data 180, Professor Bilen"
+author: 
+  name: "XXXX"
+  email: "XXXX@dickinson.edu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`' # no need to change date since this line grabs today's date
+output: 
+  html_document
+---
+
+Make sure that you have accepted the hw invitation link, and working with your clone repository.
+
+**Due date:** September 27 beginning of class.
+
+**Reminder:** You can insert R code in your Rmd file as a chunk in the following way:
+```{r}
+# Your code goes here
+```
+Make sure to insert a chunk for each (sub)section of the assignment.
+
+**Theme of the assignment**: Let's practice visualization using base R and create cool maps. Load in the `Cars93` dataset by running the following code chunk:
+
+```{r}
+library(MASS)
+data(Cars93)
+```
+
+The library function will load and attach add-on packages that have been previously installed on your machine. This will give you access to the functions and datasets available in the package. In general, you only need to install a package once (although it may require updating from time to time) but you need to access it using the library command every time you start a new session in R (and want the functionality). 
+
+The questions below use the `Cars93` data frame as a source of data. This data frame is part of the MASS package and becomes available after loading it. You can get a view of the top of the data frame by using the head command. For more information, type `?Cars93`. Let's load `Cars93` in,
+```{r}
+head(Cars93)
+```
+
+# Base R
+## Task 1
+a) Create a Frequency table and Relative Frequency table (latter uses percentages) for the variable `Type`. Make sure to round all digits to 3 digits.
+```{r}
+table(Cars93$Type)
+round(table(Cars93$Type)/ncol(Cars93),3)
+```
+b) Create a frequency bar graph for the variable `Type`. You can have count on the y axis.
+```{r}
+barplot(table(Cars93$Type),ylab = 'Count',xlab='Type',col=1:length(unique(Cars93$Type)),main = 'Frequency Distribution of Car Types',cex.axis=1.2,cex.lab=1.2)
+```
+
+*	Your axes should be labeled and legible
+*	The bars should be of different colors
+*	The plot should include a title using the main argument
+*	The names, labels, and axes sizes (cex parameter) should be set to 1.2
+
+c) Create a pie chart of the variable `Type`.
+```{r}
+pie(table(Cars93$Type),main = 'Frequency Distribution of Car Types',cex.axis=1.2,cex.label=1.2)
+```
+
+* The plot should include a title using the main argument.
+*	The names, labels, and axes sizes (cex parameter) should be set to 1.2
+
+d) What is the mode of the variable `Type`? Comment.
+It is Midsize, closely followed by Small.
+
+## Task 2 
+a) Create a histogram of the variable `Horsepower`.
+```{r}
+hist(Cars93$Horsepower, xlab='Horsepower',ylab='count',col='lightblue',main='Histogram for Horsepower',cex=1.2)
+```
+
+*	Your axes should be labeled
+*	The hist body should have a color (your choice, not too dark to obscure lines) 
+*	The plot should include a title using the main argument
+*	The names, labels, and axes sizes should be set to 1.2
+
+b) Create a second histogram with breaks at 25 HP increments instead of 50.
+```{r}
+hist(Cars93$Horsepower, xlab='Horsepower',ylab='count',col='lightblue',main='Histogram for Horsepower',cex=1.2,breaks = c(50,75,100,125,150,175,200,225,250,275,300))
+```
+
+* Use the breaks argument to define the classes
+* Other setting should be as in part (a)
+
+c) Which histogram more closely follows or rule of thumb for the suggested number of classes? Explain.
+```{r}
+sqrt(length(Cars93))
+```
+The first histogram.
+
+## Task 3 
+a) What is the type of variable `Passengers`? (Categorical nominal/ordinal or Numerical discrete/continuous?) What happens if we were to make a histogram for `Passengers`? What is the problem with this graph?
+```{r}
+hist(Cars93$Passengers, xlab='Passengers',ylab='count',col='lightblue',main='Histogram for Horsepower',cex=1.2)
+```
+Numerical discrete. This makes it inappropriate to use a histogram, given that the x axis can be misleading. One solution is to treat `Passengers` as a categorical variable and create a barplot. See below.
+
+b) Correct the problem in part (a) by creating a more appropriate visualization. Make sure to label your axes, place a title, choose a custom color as in the previous graphs. (Bonus: use factor() with levels option to display x axis values with no observations on the plot.)
+```{r}
+barplot(table(factor(Cars93$Passengers,levels=1:10)),xlab= 'Passengers',ylab='count',main='Distribution of # of Passengers',col='lightblue')
+```
+
+## Task 4 
+a) Make a histogram of the variable `Length` (the default breaks are fine). Other aspects of the plot should be as in part (a) in Task 2.
+```{r}
+hist(Cars93$Length, xlab='Horsepower',ylab='count',col='lightblue',main='Histogram for Length',cex=1.2)
+```
+
+b) What is the shape of the distribution?
+Looks symmetric, close to bell-shaped.
+
+c) Find the mean and median of the variable `Length.` Do these answers meet your expectations from part (b)?
+```{r}
+summary(Cars93$Length)
+```
+Yes! The mean and the median are quite close to each other, which makes sense given a symmetric distribution.
+
+
+You are done! 🏁 Don't forget to commit and push your .Rmd file to your Github repository before the due date.
+
+
