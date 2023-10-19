@@ -1,59 +1,1 @@
-library(MASS)
-data(Cars93)
-
-#install.packages('dplyr')
-library(dplyr)
-
-# Base-R vs. dplyr
-# select Horsepower from Cars93
-#Cars93$Horsepower
-
-Cars93 %>% select(Type,Horsepower)
-
-# keyboard shortcut for 'pipe' is cntrl + shift + m, (MacOS: cmd + shift + m)
-
-
-# filter Type==Small
-#Cars93[Cars93$Type=="Small",]
-
-Cars93 %>% filter(Type=="Small")
-
-# combine dplyr functions:
-# return Type and Horsepower, only for Small cars
-Cars93 %>% 
-    filter(Type=="Small") %>% 
-    select(Type,Horsepower)
-
-# this order is not recommended!:
-Cars93 %>% 
-    select(Type,Horsepower) %>% 
-    filter(Type=="Small")
-
-
-##########
-# return cars that are Small or Midsize (all columns) using dplyr
-Cars93 %>% 
-   filter(Type=="Small" | Type == "Midsize")
-
-# isin, '%in%' operator
-Cars93 %>% 
-  filter(Type %in% c("Small","Midsize"))
-
-#######
-# msleep data from tidyverse
-#install.packages('tidyverse')
-library(tidyverse) # load in tidyverse which contains the msleep data
-data("msleep") # load the msleep data
-
-#dplyr
-msleep %>%
-  filter(vore=="herbi" & awake>=12) %>%
-  select(vore,awake)
-
-# base R (combining functions in base R is not recommended)
-msleep[msleep$vore=="herbi",]$name
-
-# dplyr, using %in%
-msleep %>% 
-  filter(vore %in% c('herb','carni') & sleep_total >12)
-
+library(MASS)data(Cars93)#install.packages('dplyr')library(dplyr)# Base-R vs. dplyr# select Horsepower from Cars93#Cars93$HorsepowerCars93 %>% select(Type,Horsepower)# keyboard shortcut for 'pipe' is cntrl + shift + m, (MacOS: cmd + shift + m)# filter Type==Small#Cars93[Cars93$Type=="Small",]Cars93 %>% filter(Type=="Small")# combine dplyr functions:# return Type and Horsepower, only for Small carsCars93 %>%     filter(Type=="Small") %>%     select(Type,Horsepower)# this order is not recommended!:Cars93 %>%     select(Type,Horsepower) %>%     filter(Type=="Small")########### return cars that are Small or Midsize (all columns) using dplyrCars93 %>%    filter(Type=="Small" | Type == "Midsize")# isin, '%in%' operatorCars93 %>%   filter(Type %in% c("Small","Midsize"))######## msleep data from tidyverse#install.packages('tidyverse')library(tidyverse) # load in tidyverse which contains the msleep datadata("msleep") # load the msleep data#dplyrmsleep %>%  filter(vore=="herbi" & awake>=12) %>%  select(vore,awake)# base R (combining functions in base R is not recommended)msleep[msleep$vore=="herbi",]$name# dplyr, using %in%msleep %>%   filter(vore %in% c('herb','carni') & sleep_total >12)############### mutate (creating new columns)data(Cars93)Cars93_output <- Cars93 %>% mutate(HPperLiter = Horsepower / EngineSize) %>%             dplyr::select(Manufacturer,Model,Horsepower,EngineSize,HPperLiter,MPG.city)# arrange (sorts the df)Cars93_output <- Cars93 %>% mutate(HPperLiter = Horsepower / EngineSize) %>%   dplyr::select(Manufacturer,Model,Horsepower,EngineSize,HPperLiter,MPG.city) %>%   arrange(desc(Horsepower))# combining dplyr with base-R# what if you wanted to round the numbers in HPperLiter col?# %>% round() does not work.. solution?# could use the round() and mutate() and overwrite an existing col Cars93_output %>% mutate(HPperLiter = round(HPperLiter,2))# what if you wanted to grab the mean of a col in dplyr?Cars93_output %>% dplyr::select(Horsepower) %>% mean() # fix this sytnax error# what if you wanted to generate a new categorical variable from a numerical one# create a new variable named "HighPerformance" that equals one if HPperLiter >60,# 0 otherwiseCars93_output <- Cars93_output %>% mutate(HighPerformance = (HPperLiter>60)*1)####### group_by and summarize# average EngineSize in the entire datamean(Cars93$EngineSize)# how about average EngineSize by Type?Cars93 %>% group_by(Type) %>%       summarize(Avg_EngineSize = mean(EngineSize)) %>%       arrange(desc(Avg_EngineSize))
