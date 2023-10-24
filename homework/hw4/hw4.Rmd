@@ -1,0 +1,117 @@
+---
+title: "HW 4: Dplyr"
+subtitle: "Data 180, Professor Bilen"
+author: 
+  name: "Your Name"
+  email: "XXXX@dickinson.edu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document
+---
+
+**Due date:** October 31 beginning of class.
+
+Let's get some practice with **dplyr**! For this assignment, you will work with Mario Kart data! This data is made available as part of Tidy Tuesday. A codebook is available at https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-05-25.
+
+![Mario Kart](https://camo.githubusercontent.com/248411ba0d52bb38f1dccd3f74ed9d5a37f56aa95dbfb92518768b020959576c/68747470733a2f2f692e696e73696465722e636f6d2f356337643361313932363238393833663866373137623166)
+
+First, load in dplyr. Make sure to install dplyr (or tidyverse in general) first before calling the packages. (Notice the chunk below uses warning=FALSE and message=FALSE so that unnecessary messages won't contaminate your md output!)
+
+For the entire assignment, make sure to use dplyr functions only. (no base R!)
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+records <- read.csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-25/records.csv')
+head(records)
+```
+
+Here are the variables included and their meanings:
+
+- `track`: </t>Track name <br>
+- `type`: </t>Single or three lap record  <br>
+- `shortcut`: </t>Shortcut or non-shortcut record  <br>
+- `player`: </t>Player’s name  <br>
+- `system_played`: </t>Used system (NTSC or PAL)<br>
+- `date`: </t>World record date  <br>
+- `time_period`: </t>Time as hms period  <br>
+- `time`: </t>Time in seconds  <br>
+- `record_duration`: </t>Record duration in days  <br>
+
+
+# Question 1
+For the entire data, display the summary statistics (mean, median, mode, etc.) using the dplyr function `summary()` via pipe.
+
+```{r}
+
+```
+# Question 2
+Return the count of cases where a record was broken in more than a year (365 days).
+
+```{r}
+
+```
+# Question 3
+Return name of the player, name of the track, record date, and record duration for the record that took the longest time to be broken.
+
+```{r}
+
+```
+
+# Question 4
+Return the mean record time (`time`) by each track. What is the name of the track with the fastest average record time? *Hint: you should use `group_by() and summarize()*
+
+```{r}
+
+```
+# Question 5
+Let's get the year from the `date` column and save it as a variable named `year`. You can use the function `substr(date, 1, 4)` which grabs the first 4 digits in the `date` column. Use this expression in `mutate()` to create a `year` column. (Don't forget to save/overwrite the dataframe returned to the original one!)
+
+```{r}
+
+```
+
+# Question 6
+Now get the average record time (`time`) by year.
+
+```{r}
+
+```
+# Question 7
+Continuing with your results in Question 6: Do you notice a trend across years? Are the record times getting faster, slower, or no clear pattern in time? Create a barplot where each year appears on the x axis (you can treat year as a categorical variable in this case) and y axis showing the mean record time in each year. Interpret your graph. *Hint: Use your code in Question 6, which returns the average record times by year, followed by ` %>% ggplot(aes(year,mean)) + geom_bar(stat='identity')` Hint2: To make your figure wider, you can insert fig.width=10 inside the curly brackets at the beginning of your r code chunk below, as {r, fig.width=10} which I already did for you below,*
+
+```{r, fig.width=10}
+
+```
+
+# Question 8
+Create two overlaid histograms by `type` on the same plot where each histogram shows the distribution of `time` for a given track `type`. Combine dplyr and ggplot2 to achieve this. How do record times compare between Single Lap and Three Lap tracks? Hint: use `records %>% dplyr functions %>% ggplot(aes()) + type of ggplot plot` to combine dpylr with ggplot.)
+
+Note: Set `alpha=.5` for transparency.
+
+```{r}
+
+```
+
+# Question 9
+Three Lap time reports the total time spent finishing three laps in total, as opposed to finishing a single lap. Let's divide all time observations with `type=="Three Lap"` by 3 to check whether **per lap** performance declines across Three Lap vs. Single Lap. Generate a new variable named `time_per` which is the time spent per round, and create two overlaid histograms of `type_per` by `type`. Hint: Use `mutate()`, and inside `mutate()` use `ifelse()` function to conditionally replace rows: e.g.., `ifelse(type=="Three Lap",time/3,time)` which divides `time` by three only if `type=="Three Lap"`.
+
+```{r}
+
+```
+# Question 10
+There appears to be recent discoveries of shortcuts within some of the tracks causing a number of extraordinarily fast records set in `Three Lap` tracks (Have you noticed this in your graph in Question 9?). Replicate your histogram in Question 9 with `shortcut=="No"` filter.
+
+```{r}
+
+```
+
+# Question 11
+Lastly, compare the mean `time` by `system_played`. Do you observe a difference across the two game systems? (Note: NTSC version of the game runs at 60 FPS (Frames Per Second), and PAL runs at 50 FPS!) Does this appear to affect performance of records set?
+
+```{r}
+
+```
+
+You are done! 🏁 Don't forget to commit and push your .Rmd file to your Github repository before the due date. (Well... the checkered flag emoji is now super relevant for this assignment!)
+
+
