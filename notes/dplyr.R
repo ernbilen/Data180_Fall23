@@ -21,19 +21,19 @@ Cars93 %>% filter(Type=="Small")
 # combine dplyr functions:
 # return Type and Horsepower, only for Small cars
 Cars93 %>% 
-    filter(Type=="Small") %>% 
-    select(Type,Horsepower)
+  filter(Type=="Small") %>% 
+  select(Type,Horsepower)
 
 # this order is not recommended!:
 Cars93 %>% 
-    select(Type,Horsepower) %>% 
-    filter(Type=="Small")
+  select(Type,Horsepower) %>% 
+  filter(Type=="Small")
 
 
 ##########
 # return cars that are Small or Midsize (all columns) using dplyr
 Cars93 %>% 
-   filter(Type=="Small" | Type == "Midsize")
+  filter(Type=="Small" | Type == "Midsize")
 
 # isin, '%in%' operator
 Cars93 %>% 
@@ -62,7 +62,7 @@ msleep %>%
 # mutate (creating new columns)
 data(Cars93)
 Cars93_output <- Cars93 %>% mutate(HPperLiter = Horsepower / EngineSize) %>% 
-            dplyr::select(Manufacturer,Model,Horsepower,EngineSize,HPperLiter,MPG.city)
+  dplyr::select(Manufacturer,Model,Horsepower,EngineSize,HPperLiter,MPG.city)
 
 # arrange (sorts the df)
 Cars93_output <- Cars93 %>% mutate(HPperLiter = Horsepower / EngineSize) %>% 
@@ -82,6 +82,11 @@ Cars93_output %>% dplyr::select(Horsepower) %>% mean() # fix this sytnax error
 # create a new variable named "HighPerformance" that equals one if HPperLiter >60,
 # 0 otherwise
 Cars93_output <- Cars93_output %>% mutate(HighPerformance = (HPperLiter>60)*1)
+Cars93_output <- Cars93_output %>% mutate(HighPerformance = ifelse(HPperLiter>60,1,0))
+
+# more than 2 categories?
+# >70 give 2; between 50-70 give 1; below 50 give 0
+Cars93_output <- Cars93_output %>% mutate(HighPerformance = ifelse(HPperLiter>70,2,ifelse(HPperLiter>50,1,0)))
 
 ######
 # group_by and summarize
@@ -89,8 +94,8 @@ Cars93_output <- Cars93_output %>% mutate(HighPerformance = (HPperLiter>60)*1)
 mean(Cars93$EngineSize)
 # how about average EngineSize by Type?
 Cars93 %>% group_by(Type) %>%
-       summarize(Avg_EngineSize = mean(EngineSize)) %>% 
-      arrange(desc(Avg_EngineSize))
+  summarize(Avg_EngineSize = mean(EngineSize)) %>% 
+  arrange(desc(Avg_EngineSize))
 
 
 #####
@@ -124,10 +129,11 @@ Cars93 %>%
 Cars93 %>% 
   group_by(Cylinders) %>%
   summarize(min_price = min(Price), 
-  max_price = max(Price), avg_price = mean(Price), 
-  avg_size=mean(EngineSize),avg_power=mean(Horsepower),
-  med_mpg = median(MPG.highway),
-  num_airbags=sum(AirBags == "Driver & Passenger"))
+            max_price = max(Price), avg_price = mean(Price), 
+            avg_size=mean(EngineSize),avg_power=mean(Horsepower),
+            med_mpg = median(MPG.highway),
+            num_airbags=sum(AirBags == "Driver & Passenger"),
+            count = n())
 
 
 #######
@@ -147,7 +153,7 @@ msleep %>%
 # 2) create a new col brain_per that shows the percentage of body weight that 
 #brain takes (use the ratio brainwt/bodywt)
 # note that the following does not alter the original df:
-msleep %>% 
+msleep_new <- msleep %>% 
   mutate(brain_per=brainwt/bodywt)
 
 # 2') What is the average brain_per? (Hint: use na.rm=T) What does the distribution 
@@ -159,19 +165,32 @@ msleep %>%
 
 msleep_new %>% 
   dplyr::select(brain_per) %>% 
-  ggplot(aes(brain_per))+
-    geom_histogram()
+  ggplot(aes(brain_per)) +
+  geom_histogram()
 
 # 3) Return the top 5 animals with the highest brain_per
-msleep_new %>% 
+msleep_new %>%
   dplyr::select(name,brain_per) %>% 
-  arrange(desc(brain_per)) %>% 
+  arrange(desc(brain_per)) %>%
   head(n=5)
 
 
 # Use ggplot2 for the following:
 # 4) Make a scatterplot showing brain_per against awake
-# 4') Make a scatterplot showing brain_per against awake with different colors 
+msleep %>% 
+  mutate(brain_per=brainwt/bodywt) %>%
+  ggplot(aes(x=brain_per, y=awake)) +
+  geom_point()
+
+# 4') Make a scatterplot showing brain_per against awake with different colors
 # by "vore"
+msleep %>% 
+  mutate(brain_per=brainwt/bodywt) %>%
+  ggplot(aes(x=brain_per, y=awake,col=vore)) +
+  geom_point(size=2)
+
+
+
+
 
 
