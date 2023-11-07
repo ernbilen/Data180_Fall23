@@ -1,0 +1,88 @@
+---
+title: "cluster"
+output: html_document
+date: "2023-11-07"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+df <- read.csv('https://raw.githubusercontent.com/ernbilen/Data180_Fall23/main/data/Cluster_Ex.csv')
+```
+
+```{r}
+library(ggplot2)
+ggplot(df,aes(x=X1,y=X2)) + 
+  geom_point()
+```
+
+```{r}
+plot(df$X1,df$X2)
+```
+
+```{r}
+# note that the first col has row names
+dist(df[,-1])
+```
+
+```{r}
+# create a dendrogram
+plot(hclust(dist(df[,-1],method='manhattan'), method = 'complete'))
+```
+
+```{r}
+# create a dendrogram
+hc_obj <- hclust(dist(df[,-1],method='manhattan'), method = 'complete')
+plot(hc_obj)
+rect.hclust(hc_obj,k=3,border=c('green','red','blue'))
+```
+
+
+```{r}
+# create a new variable called assignment that shows cluster assignments of each obs
+df$assignment <- factor(cutree(hclust(dist(df[,-1],method='manhattan'), method = 'complete'),k=3))
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(df,aes(x=X1,y=X2,col=assignment)) + 
+  geom_point(size=2)
+```
+
+
+```{r}
+# US States arrests data
+data("USArrests")
+```
+
+```{r}
+# visually inspect obs from two columns in the data, Murder and Assault rates
+ggplot(USArrests,aes(x=Murder,y=Assault)) +
+    geom_point(size=2)
+```
+
+```{r}
+# create a dendrogram using all four variables in the data
+hc_obj <- hclust(dist(USArrests,method='euclidean'), method = 'complete')
+plot(hc_obj)
+rect.hclust(hc_obj,k=3,border=c('green','red','blue'))
+
+```
+
+```{r}
+# color the scatterplot separately using cluster assignments
+USArrests$assignment <- factor(cutree(hclust(dist(USArrests,method='euclidean'), method = 'complete'),k=3))
+
+ggplot(USArrests,aes(x=Murder,y=Assault,col=assignment)) +
+    geom_point(size=2)
+```
+
+
+
