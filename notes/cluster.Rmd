@@ -234,6 +234,29 @@ dfcars$assignments <- factor(cutree(hc_cars,k=4))
 plot(dfcars$Horsepower,dfcars$MPG.city,col=dfcars$assignment)
 ```
 
+```{r}
+#vertebrate <- read.csv('https://raw.githubusercontent.com/ernbilen/Data180_Fall23/main/homework/hw5/vertebrate.csv')
+#head(vertebrate)
+
+# dendrogram with 0-0 matches not discarded
+#1-dist(vertebrate,method='manhattan')/6
+
+# dendrogram with 0-0 matches discarded
+plot(hclust(1-dist(vertebrate,method='binary'),method='complete'))
+
+```
+
+```{r}
+# Gower's measure: Daisy function (which comes from the cluster package)
+# Make a dendrogram using complete-linkage method
+
+# install.packages(cluster)
+
+# Use: AirBag, Cylinders, Origin (discard 0-0 matches), Length, MPG.city, Horsepower
+library(MASS)
+data(Cars93)
+
+```
 
 
 
