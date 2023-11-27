@@ -1,0 +1,48 @@
+Data 180 **Study guide for Exam 2:**
+This list is created to help you study for exam 2. 
+*Disclaimer:* The topics listed here may not be fully comprehensive. You should refer to
+the notes posted on GitHub, as they form the main source material.
+
+Topic 4: dplyr
+Make sure to review the dplyr homework and understand the operations in it well.
+Be able to use the
+Four main functions of dplyr (select, filter, mutate, arrange) to manipulate and access data.
+Pipe operator with dplyr functions.
+Ifelse function in creating a categorical variable from numerical.
+Groupby and summarize to return aggregate summaries of data.
+
+Topic 5: unsupervised learning: hierarchical clustering
+What is unsupervised learning? Compare with supervised learning.
+Identify if a data science task requires unsupervised or supervised learning.
+Define what a distance is. Calculate distance between two objects using Euclidean,
+Manhattan, and Minkowski distance.
+What is a data matrix? What is a distance matrix? Identify the dimensions of a given
+data matrix and distance matrix given a dataset.
+Find distance between two groups of objects using nearest neighbor, furthest neighbor,
+and average neighbor distance.
+What is hierarchical clustering? Why is it called "bottom up"?
+What is a dendrogram?
+Find a partition set necessary to create a dendrogram given data and/or distance matrix.
+Create (by hand) a dendrogram given data and/or distance matrix using partitions.
+Create (by R, using hclust) a dendrogram given data and/or distance matrix using partition set.
+Show visually how to identify clusters on a dendrogram. (e.g., horizontally cutting the dendrogram)
+Visually compare if a clustering solution from a dendrogram matches well with a scatterplot of the raw data.
+Create a scatterplot of raw data with separate colors or symbols showing cluster belonging for each observation.
+
+Topic 6: unsupervised learning: k-means
+What is a centroid? Find the centroid of a group of objects by hand.
+What is k-means clustering? Why is it called "k-means"?
+Describe briefly how the algorithm works step by step, including its stochastic (random) nature.
+Explain what WGSS is. How does the k-means algorithm use WGSS to find a clustering solution? (No need for by-hand calculations)
+
+Topic 7: unsupervised learning part 2: similarity measures
+What is a similarity measure? How is it different (or similar) to a distance measure.
+Why is similarity more useful in certain datasets compared to dissimilarity (distance)? Are all kinds of data suitable to use distance measures?
+Find by hand the similarity between two objects given binary, categorical (with more than 2 possible categories), and numerical characteristics using matching coefficient.
+Why for certain data 0-0 matches can't imply similarity between objects? Given an example of data in a given dataset in which a 0-0 match contains no useful information for determining similarity.
+What is Jaccard's coefficient? Why was it proposed? Find by hand the similarity between two objects given binary, categorical (with more than 2 possible categories), and numerical characteristics using Jaccard's coefficient.
+What is the Generalized Similarity Measure (aka the Gower's measure)? Why and how is it used?
+Find by hand the similarity between two objects using Gower's measure where certain 0-0 matches (which you as the data scientist must determine) don't contain useful information.
+Use daisy function in R to create a dissimilarity matrix.
+Know how to convert a dissimilarity observation (or a dissimilarity matrix) into a similarity observation (or a similarity matrix).
+
