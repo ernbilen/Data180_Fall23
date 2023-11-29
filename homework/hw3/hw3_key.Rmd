@@ -1,0 +1,186 @@
+---
+title: "HW 3: Visualization, Ggplot2 & Maps"
+subtitle: "Data 180, Professor Bilen"
+author: 
+  name: "XXXX"
+  email: "XXXX@dickinson.edu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`' # no need to change date since this line grabs today's date
+output: 
+  html_document
+---
+
+Make sure that you have accepted the hw invitation link, and working with your clone repository.
+
+**Due date:** October 11 beginning of class.
+
+**Reminder:** You can insert R code in your Rmd file as a chunk in the following way:
+```{r}
+# Your code goes here
+```
+Make sure to insert a chunk for each (sub)section of the assignment.
+
+**Theme of the assignment**: This time we will practice visualization using ggplot2, and create cool maps. Load in the `Cars93` dataset by running the following code chunk:
+
+```{r}
+library(ggplot2) # keep in mind you have to install the package if it's not installed in your machine
+library(MASS)
+data(Cars93)
+head(Cars93)
+```
+
+# Ggplot2
+
+## Task 1
+Create a simple scatterplot using ggplot2 where x axis shows `EngineSize`, y axis shows `MPG.city`.
+
+* Use blue color for your dots.
+* Use size = 2 for the dot sizes.
+* Use xlim and ylim to make sure your x and y axis ranges make sense.
+* Add a title, subtitle, x axis label, y axis label, and a caption using title, subtitle, caption options inside `+ labs()`.
+
+ 
+```{r}
+library(ggplot2)
+ggplot(Cars93, aes(x=Weight,y=MPG.city)) + 
+                geom_point(col='blue') + labs(title = "MPG City by Weight",
+              subtitle = "Each point corresponds to a car",
+              caption = "Data source: Cars93")
+```
+
+## Task 2
+Recreate the scatterplot in Task 1. Add the following functionality:
+
+* Use a different color for each car `Type`.
+```{r}
+library(ggplot2)
+ggplot(Cars93, aes(x=Weight,y=MPG.city)) + 
+                geom_point(aes(color=Type))
+```
+
+## Task 3
+Recreate the scatterplot in Task 2. Add the following functionality:
+
+* Fit and overlay a smooth curve.
+* Make the curve line red, and dashed. (Hint linetype is the option you can use to set line style as 'dashed')
+
+```{r}
+library(ggplot2)
+ggplot(Cars93, aes(x=Weight,y=MPG.city)) + 
+                geom_point(aes(color=Type)) +
+                geom_smooth(color='red',linetype = "dashed") 
+```
+
+## Task 4
+Create a barplot showing count of cars by `AirBags` using ggplot2.
+
+* `geom_bar()` is the function that creates a barplot.
+* Use a different color for each bar.
+* Add a title, subtitle, x axis label, y axis label, and a caption using title, subtitle, caption options inside `+ labs()`.
+
+```{r}
+ggplot(Cars93,aes(x=AirBags)) +
+      geom_bar(aes(fill=AirBags)) + labs(title = "Number of cars by AirBag",
+              subtitle = "Each bar shows the count of cars",
+              caption = "Data source: Cars93")
+```
+
+## Task 5
+Recreate the barplot in Task 4 for different car `Origin`, such that you create one barplot for each `Origin` category and display all on the same graph.
+
+* You can have `Origin` as the "x" variable by setting `x=Origin.`
+* Use `fill=AirBags` to get a different color (and bar) by `AirBags`.
+* in `geom_bar(), use `position='dodge'` to have the barplots side by side.
+
+```{r}
+ggplot(Cars93,aes(x=Origin)) +
+      geom_bar(aes(fill=AirBags),position='dodge')
+```
+
+# Maps
+Load Australia state map data via running:
+```{r}
+# install the packages below by uncommenting the lines. You need to do this only once.
+#install.packages('maps')
+#install.packages('ozmaps')
+#install.packages('sf')
+library(maps)
+library(ozmaps)
+library(sf)
+au_states <- ozmaps::ozmap_states
+
+# Display the data
+head(au_states)
+```
+
+## Task 1
+Create a map of Australia using ggplot.
+```{r}
+ggplot(au_states) + 
+  geom_sf()
+```
+
+## Task 2
+Modify your map such that each state is displayed with a different color. (Hint: use the fill option as an aes setting with variable `NAME`.)
+```{r}
+ggplot(au_states) + 
+  geom_sf(aes(fill = NAME))
+```
+## Task 3
+Read in the capital city dataframe by running:
+```{r}
+au_capitals <- tibble::tribble( 
+  ~city,           ~lat,     ~lon,
+  "Sydney",    -33.8688, 151.2093,  
+  "Melbourne", -37.8136, 144.9631, 
+  "Brisbane",  -27.4698, 153.0251, 
+  "Adelaide",  -34.9285, 138.6007, 
+  "Perth",     -31.9505, 115.8605, 
+  "Hobart",    -42.8821, 147.3272, 
+  "Canberra",  -35.2809, 149.1300, 
+  "Darwin",    -12.4634, 130.8456, 
+)
+```
+
+Display the capitals as points on your map from Task 1. (Hint: combine geom_sf() with geom_point())
+
+```{r}
+ggplot() + 
+  geom_sf(data = au_states, colour = "black", fill = NA) + 
+  geom_point(data = au_capitals, aes(x = lon, y = lat), col = "red", size=2)
+```
+
+
+## Task 4
+Let's take a look at different projection output. Change your map's projection to epsg 3112 by adding `+ coord_sf()`. Recall the option that goes inside is `st_crs(4_digit_code)`
+```{r}
+ggplot(au_states) + geom_sf()
+ggplot(au_states) + geom_sf() + coord_sf(crs = st_crs(3112))
+```
+
+## Task 5
+Lastly, let's display the same map using mapview()
+
+```{r}
+#install.packages('mapview')
+library(mapview)
+mapview(au_states)
+# you can use the mapview options to turn off legends, hover etc: legend = FALSE, label = FALSE, popup = FALSE
+```
+
+## Task 6
+Let's display the capitals on the map like before. First convert the `au_capitals` dataframe to spatial dataframe object by running:
+```{r}
+capitals_geo <- st_as_sf(au_capitals, coords = c("lon", "lat"))
+```
+
+Now add the new spatial capitals object via + (that is, you can use the following syntax to add a layer: `mapview() + mapview()`)
+
+```{r}
+mapview(au_states) + mapview(capitals_geo,col.regions='red',legend=F)
+```
+
+
+
+You are done! 🏁 Don't forget to commit and push your .Rmd file to your Github repository before the due date.
+
+
