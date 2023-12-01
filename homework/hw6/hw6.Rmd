@@ -1,0 +1,103 @@
+---
+title: "HW 6"
+subtitle: "Data 180, Professor Bilen"
+author: 
+  name: "Your Name"
+  email: "XXXX@dickinson.edu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+**Due date:** Optional homework, not required to turn it in, although you are encouraged to complete it.
+
+
+The file `Milk_Composition.csv` is available in the same hw folder as this .Rmd file on Github (Real Data!). The file contains the composition of milk for a set of mammals. The variables measured are the compositions (as a percentage) of five milk constituents: Water, Protein, Fat, Lactose, and Ash. (Ash is a term used to describe inorganic residue from the incineration of organic matter and is mostly minerals).
+
+Read this table into R and create the object `Mammals_Milk` using
+
+```{r}
+library(tidyverse)
+Mammals_Milk<-read.csv("Milk_Composition.csv",header=T,row.names=1)
+head(Mammals_Milk)
+```
+
+# Question 1
+Use the `summary()` function to produce a summary of the variables (mean, median..) in the Mammals_Milk data frame.
+
+```{r}
+
+```
+
+To have comparable units, let's standardize values (aka get z-scores) of the five variables: Water, Protein, Fat, Lactose, and Ash using the scale function and store it as an object `Mammals_Milk_Std`. A 0 z-score means an observation is exactly on its mean; a negative value means it's smaller than mean; a larger number means it's larger than the mean. ([Here is a nice summary on z-scores](https://www.simplypsychology.org/z-score.html)). Use this standardized object when indicated in the next questions. 
+
+```{r}
+Mammals_Milk_Std<-round(scale(Mammals_Milk),2)
+head(Mammals_Milk_Std)
+```
+# Question 2
+Use hierarchical clustering (i.e. `hclust`) to cluster the animals based on the standardized composition of their milk. Use the Euclidean metric and complete linkage. Plot the dendrogram of the clustering. In your dendrogram: 
+
+*	Set the line width to 3
+*	Set the title to “Mammals Clustered by Std. Milk Composition \n Euclidean Metric, Complete Linkage”
+*	Remove the subtitle by setting sub= ""
+*	Set the x-axis label to “Mammals” with cex.lab=1.25
+*	Have the terminal edges extend to the 0 height by setting hang=-1
+*	Set the frame.plot argument to T to draw a box around the dendrograms
+
+```{r}
+
+```
+
+# Question 3
+For k = 3 and k = 4, perform a k-means clustering of the mammals based on their standardized milk composition. Before clustering, set the seed to 125, which I already copied below for you at the beginning of the cell. This is for me to be able to perfectly replicate your potentially different clustering solution (it's a stochastic/random process remember>?) Set the nstart option to 100. Call the kmeans objects `MMilk_km_3` and `MMilk_km_4.` Append the clustering solutions (i.e. the cluster membership vectors) on the right side of the original data frame, naming the columns `km_3` and `km_4.` Use the arrange function to sort this table on the cluster membership columns, first for `km_3` and a second time for `km_4.` Print both sorted tables in your solutions here, one for the K = 3 solution sorting and a second one for the K = 4 cluster solution sorting.
+
+```{r}
+set.seed(125)
+
+```
+
+# Question 4
+Use the `group_by` and `summarize` functions to provide tables summarizing the results of the two different cluster solutions (K = 3 and K = 4) above. Make one table for each of the clustering procedures. Include in the table the values
+
+*	`Count`: the group size
+*	`Mean_Water` the mean water content
+*	`Mean_Protein` the mean protein content
+*	`Mean_Fat` the mean fat content
+*	`Mean_Lactose` the mean lactose content
+*	`Mean_Ash` the mean ash content
+
+Call the summary tables `MMilk_Agg_K3` and `MMilk_Agg_K4`. Round the elements in the data frames to the hundredths place and paste them into your solutions.
+
+```{r}
+
+```
+# Question 5
+For the K=3 solution, make a set of boxplots showing the distribution of each variable by cluster membership. In total you should have five graphs (one for each variable in the dataset). Each graph should include three boxplots (one for each cluster). *Hint:* Use `ggplot2` with `geom_boxplot` and create five different ggplot objects. Name them as graph1, graph2,... as below. Finally, use the library named `cowplot` which includes the function `plot_grid()` that enables plotting multiple graphs side by side. See more in the cell below. Make sure to change `eval=F` to `eval=T` in its options when you execute the cell.
+
+```{r, eval=F}
+require(cowplot)
+graph1 <- 
+graph2 <- 
+graph3 <- 
+graph4 <- 
+graph5 <- 
+
+plot_grid(graph1, graph2, graph3, graph4, graph5, labels = "AUTO")
+```
+
+# Question 6
+Create a plot showing how WGSS changes for K = 1 to 8 groups. For each K choice, cluster the mammals based on their standardized milk composition and set the nstart argument to run at 50 at each iteration. Compute and record WGSS. After the loop is done, show the plot of WGSS by number of clusters in your solutions. How many clusters does the elbow plot suggest? How does this compare to your impression from the dendrogram in Question 2?
+
+```{r}
+
+```
+
+
+You are done! 🏁 Don't forget to commit and push your .Rmd file to your Github repository before the due date.
+
+
