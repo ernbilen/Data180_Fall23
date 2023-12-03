@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to Supervised Learning  Part 1: Linear Regression</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Eren Bilen   Dickinson College" />
+    <meta name="date" content="2022-12-06" />
+    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introduction to Supervised Learning <br>Part 1: Linear Regression
+]
+.author[
+### Eren Bilen <br> Dickinson College
+]
+.date[
+### 2022-12-06
+]
+
+---
+
+
+
+
+#Supervised versus Unsupervised Learning
+
+**supervised learning** means that for each predictor `\(x_i\)`, `\(i=1,\ldots,n\)` there is an associated response variable `\(y_i\)`, 
+
+Our goal is to fit a model relating the response `\((y)\)` to the predictors `\((x)\)` such that we can accurately predict future responses (prediction) or such that we can better understand the relationship between the response and the predictor (inference). 
+
+Examples of this include linear regression, logistic regression, boosting, support vector machines, regression tree.
+
+---
+#Supervised versus Unsupervised Learning
+
+Unsupervised learning explores a different situation where for every observation `\(x_i\)`
+that we observe, we do not observe a response variable `\(y_i\)`. 
+
+Therefore, we cannot fit a model since we don't have a response variable! (All variales are `\(x_i\)`!)
+
+In this setting, we lack the supervision of a response `\(y_i\)` to guide the `\(x_i\)` for model fitting, so we develop other methods to guide our analysis.
+
+Typically we are **guided by the data**! 
+
+Recall: k-means clustering, hierarchical clustering, LDA. 
+
+The goal of clustering is to ascertain, on the basis of `\(x_1, \ldots, x_n\)`, where the observations fall into relatively distinct groups.
+
+---
+#Why Linear Regression
+
+- Linear Regression is a simple approach for supervised learning and predictive and quantitative response. 
+- It is one of the simplest methods to consider.
+- Extremely widely used in research: Econometrics!
+- Enables prediction + interpretation
+  - Unlike tree based models or neural-nets where interpretation is almost impossible.
+
+
+---
+#Recall the Advertising data set
+
+Consider Advertising data, where one is asked to suggest a marketing plan for next year that will result in high product sales.
+
+Questions that we might want to address:
+
+1. Is there a relationship between advertising budget and sales?
+  * How strong is the relationship between advertising budget and sales?
+2. Which media contribute to sales? (newspaper, TV, Superbowl..)
+  * How accurately can we estimate the effect of each medium on sales? 
+3. How accurately can we predict future sales, given all predictors?
+4. What is the type of relationship? (linear, non-linear?)
+
+Linear regression can answer each of these questions.
+
+---
+#Simple Linear Regression (SLR)
+
+- SLR is a way for predicting a response `\(Y\)` on the basis of a single predictor variable `\(X.\)`
+ - `\(Y\)` could be numeric, binary/categorical (coded as integers)
+- Easily expandable to Multiple Linear Regression where there exist multiple predictors `\(X_i\)`.
+
+We  model a linear relationship as 
+`$$\begin{equation}
+  \hat{y} = \hat{\beta_o} + \hat{\beta_1} x,
+\tag{1}
+\end{equation}$$`
+
+- We often say that we are regressing `\(Y\)` onto `\(X.\)`
+
+In equation **(1)**, `\(\hat{\beta_o}\)` and  `\(\hat{\beta_1}\)` represent the slope and the intercept in the linear model. 
+
+Once we have used our **training data** to produce estimates `\(\hat{\beta_o}, \hat{\beta_1}\)` for the model coefficients, we can predict future sales on the basis of a particular value of TV advertising by computing. More on this to come.
+
+---
+#Estimating the Coefficients
+
+We can use equation (1) to make predictions, but we need to "fit the model" and estimate the coefficients. 
+
+Start with exploring the Advertising data
+
+
+
+```r
+ad &lt;- read.table("data/Advertising.csv", header=TRUE, sep=",")
+par(mfrow=c(1,3))
+plot(ad$TV, ad$Sales, xlab="TV", ylab="Sales",cex=2,cex.lab=1.25)
+plot(ad$Radio, ad$Sales, xlab="Radio", ylab="Sales",cex=2,cex.lab=1.25)
+plot(ad$Newspaper, ad$Sales, xlab="Newspaper", ylab="Sales",cex=2,cex.lab=1.25)
+```
+
+![](MLLecture-30_linearreg_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+
+---
+#Estimating the Coefficients
+
+- Let `\(\hat{y}_i = \hat{\beta_o} + \hat{\beta_1} x_i\)` be the prediction `\(Y\)` based on the `\(i\)`the value of X.
+  - Goal: estimate the `\(\hat{\beta_o}\)` (aka intercept) and `\(\hat{\beta_1}\)` (aka slope) such that the resulting line goes through "right in the middle" of the data points.
+
+- Define `\(e_i = y_i - \hat{y}_i\)` known as the `\(i\)`th **residual**, or the **error** where `\(y_i\)` is the actual value of the response variable, `\(\hat{y_i}\)` is the model's prediction. 
+
+- The **Sum of Squared Residiuals (SSR)** is defined as
+
+`\begin{align}
+\text{RSS} &amp;= e_1^2 + \ldots e_n^2 \\
+&amp;= \sum_{i=1}^n (y_i - \hat{\beta}_o \hat{\beta}_1x_i)^2
+\end{align}`
+
+- Using calculus, one can show that the minimizers are 
+
+`\begin{align}
+\hat{\beta}_1 &amp;= \frac{\sum_{i=1}^n(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n(x_i - \bar{x})}, \; \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+\end{align}`
+
+---
+# `\(R^2\)`
+
+  `\(R^2\)` is the **proportion of variance explained**—and it always takes on a value between 0 and 1, independent of the scale of Y.
+
+`$$R^2 = \frac{TSS-SSR}{TSS} = 1 -\frac{SSR}{TSS},$$`
+  where `\(TSS = \sum_i (y_i -\bar{y})\)`
+  is the **total sum of squares**.
+
+  - TSS measures the total variance in the response Y , and can be thought of as the amount of variability inherent in the response before the regression is performed.
+
+- SSR measures the amount of variability that is left unexplained after performing the regression.
+
+- `\(R^2\)` measures the proportion of variability in Y that can be explained using X.
+
+  - An `\(R^2\)` statistic that is close to 1 indicates that a large proportion of the variability in the response has been explained by the regression.
+  - A number near 0 indicates that the regression did not explain much of the variability in the response.
+  - This might occur because the linear model is wrong, or the inherent variability in response is high, or both.
+  - Additional benefit of regression: coefficients have meaning! (prediction vs. interpretation)
+
+---
+
+# R example
+
+Load the MASS and ISLR packages
+
+```r
+library(MASS)
+library(ISLR)
+data(Boston)
+```
+
+We investivate the `Boston` data set, which records `medv` (median house value) for 506 neighborhoods around Boston.
+
+**Goal**: predict `medv` using 13 predictors such as `rm` (average number of rooms per house), `age` (average age of houses), and `lstat` (percent of households with low socioeconomic status).
+
+---
+#Boston data set
+
+
+```r
+# check variable names
+names(Boston)
+```
+
+```
+##  [1] "crim"    "zn"      "indus"   "chas"    "nox"     "rm"      "age"    
+##  [8] "dis"     "rad"     "tax"     "ptratio" "black"   "lstat"   "medv"
+```
+
+```r
+# attach the Boston data set
+attach(Boston)
+```
+
+What types of exploratory data
+analysis can we do?
+- histogram
+- barplot
+- scatterplot
+- a map of Boston colored with a scale of average home price by neighborhood.
+
+---
+#Boston data set
+
+
+- How do we do linear regression?
+
+
+```r
+# run the linear regression
+lm.fit &lt;- lm(medv~lstat ,data=Boston)
+# limited standard output
+lm.fit
+```
+
+```
+## 
+## Call:
+## lm(formula = medv ~ lstat, data = Boston)
+## 
+## Coefficients:
+## (Intercept)        lstat  
+##       34.55        -0.95
+```
+
+- where `medv` is the Y-variable, `lstat` is the X variable.
+- interpretation: one unit change in X is associated with a 0.95 *decrease* in Y.
+- Does the interpretation make sense for `medv` and `lstat`?
+  - Always check the mean Y and X when you interpret coefficients to get a sense of their magnitude.
+---
+#Boston data set
+
+
+```r
+# detailed summary output
+summary(lm.fit)
+```
+
+```
+## 
+## Call:
+## lm(formula = medv ~ lstat, data = Boston)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.168  -3.990  -1.318   2.034  24.500 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 34.55384    0.56263   61.41   &lt;2e-16 ***
+## lstat       -0.95005    0.03873  -24.53   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.216 on 504 degrees of freedom
+## Multiple R-squared:  0.5441,	Adjusted R-squared:  0.5432 
+## F-statistic: 601.6 on 1 and 504 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+# Regression plot
+
+
+```r
+# scatterplot
+plot(lstat, medv)
+# add the regression line
+abline(lm.fit,lwd=2,col="red")
+```
+
+![](MLLecture-30_linearreg_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+---
+# Now, let's really talk about prediction
+
+What does the model predict for the median home value in a neighborhood with `lstat`=10?
+
+In supervised learning, you want to split your data into traning and test groups. This is done to prevent *overfitting*. 
+
+
+
+```r
+# create a training sample
+trainingloc &lt;- sample(1:nrow(Boston), 0.8*nrow(Boston))
+training &lt;- Boston[trainingloc, ]
+# create a test sample
+testloc &lt;- setdiff(1:nrow(Boston), trainingloc) # setdiff finds the rows not in trainingloc
+test &lt;- Boston[testloc, ]
+
+# fit the model
+trained_model &lt;- lm(medv~lstat ,data=training)
+
+# predict for a single value
+#trained_model$coefficients[1] + trained_model$coefficients[2] * 10
+
+# equivalently,
+#predict(trained_model, newdata = data.frame(lstat=c(10)))
+```
+
+---
+# Now, let's really talk about prediction
+
+```r
+# predict for all lstat in the test sample, compare with the actual Y
+preds &lt;- trained_model$coefficients[1] + trained_model$coefficients[2] * test$lstat
+
+# plot predicted (red) and actual medv (blue)
+plot(test$lstat, preds,col=c('red'),ylab='medv', xlab='lstat',ylim=c(0,50),cex=1.25)
+par(new=TRUE)
+plot(test$lstat, test$medv,col=c('blue'),ann=FALSE, axes=FALSE,cex=1.25)
+```
+
+![](MLLecture-30_linearreg_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+# How good is the model?: Mean Squared Error (MSE)
+
+```r
+errorsq &lt;- (test$medv - preds)^2
+mse &lt;- sum(errorsq)/nrow(test)
+mse
+```
+
+```
+## [1] 57.86389
+```
+
+---
+# Can we improve on the model? Add another variable
+
+```r
+# fit the model with the average number of rooms per house included as an additional predictor
+trained_model &lt;- lm(medv ~ lstat + rm ,data=training)
+
+# predict for all lstat in the test sample, compare with the actual Y
+preds &lt;- trained_model$coefficients[1] + trained_model$coefficients[2] * test$lstat +
+  trained_model$coefficients[3] * test$rm
+
+# Get MSE
+errorsq &lt;- (test$medv - preds)^2
+mse &lt;- sum(errorsq)/nrow(test)
+mse
+```
+
+```
+## [1] 44.55884
+```
+
+
+---
+# Works with binary outcome too!: LPM
+
+```r
+# fit the model with the average number of rooms per house included as an additional predictor
+trained_model &lt;- lm(chas ~ rm ,data=training)
+
+# predict for all lstat in the test sample, compare with the actual Y
+preds &lt;- trained_model$coefficients[1] + trained_model$coefficients[2] * test$rm
+
+# plot predicted (red) and actual medv (blue)
+plot(test$rm, preds,col=c('red'),ylab='chas', xlab='rm',cex=1.25)
+par(new=TRUE)
+plot(test$rm, test$chas,col=c('blue'),ann=FALSE, axes=FALSE,cex=1.25)
+```
+
+![](MLLecture-30_linearreg_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+# Works with binary outcome too!: LPM
+
+```r
+summary(trained_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = chas ~ rm, data = training)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.06763 -0.06265 -0.06192 -0.06097  0.94171 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  0.075260   0.112272    0.67    0.503
+## rm          -0.002141   0.017867   -0.12    0.905
+## 
+## Residual standard error: 0.2415 on 402 degrees of freedom
+## Multiple R-squared:  3.573e-05,	Adjusted R-squared:  -0.002452 
+## F-statistic: 0.01437 on 1 and 402 DF,  p-value: 0.9047
+```
+
+---
+# Works with binary outcome too!: LPM
+
+```r
+library(dplyr)
+test &lt;- test %&gt;% mutate(make_pred=(preds&gt;mean(chas))*1)
+
+# Get "confusion matrix"
+oneone &lt;- test %&gt;% filter(chas==1, make_pred==1) %&gt;% count()
+onezero &lt;- test %&gt;% filter(chas==1, make_pred==0) %&gt;% count()
+zeroone &lt;- test %&gt;% filter(chas==0, make_pred==1) %&gt;% count()
+zerozero &lt;- test %&gt;% filter(chas==0, make_pred==0) %&gt;% count()
+
+percent_correct &lt;- (oneone + zerozero)/nrow(test)
+percent_correct
+```
+
+```
+##           n
+## 1 0.9019608
+```
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

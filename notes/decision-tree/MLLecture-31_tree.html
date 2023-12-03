@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to Supervised Learning  Part 2: Decision Tree</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Eren Bilen   Dickinson College" />
+    <meta name="date" content="2022-12-07" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Introduction to Supervised Learning <br>Part 2: Decision Tree
+### Eren Bilen <br> Dickinson College
+### 2022-12-07
+
+---
+
+
+
+
+# Basics of Decision Trees
+
+- Decision trees can be applied to both regression and classification problems.
+ - regression tree: when you predict a value on a continuous scale
+ - classification tree: when you try to predict a categorical variable, e.g., 0-1 binary
+ 
+- More flexible than linear regression, *i.e. it can easily fit linear and non-linear!*
+ - At the cost of interpretability (instead of a mathematical model, we will have bunch of if-else conditions)
+ - You don't care about interpretation, if your only goal is to predict anyway
+
+- We will cover regression trees (they use numeric, continuous outcome), but classification trees are very similar (binary outcome). 
+- Check out the ISLR textbook (link on Github) Chapter 8, page 327 for more.
+
+---
+#Regression Trees
+
+In order to motivate regression trees, we begin with a simple example: Predicting a baseball player's salary
+
+- Our motivation is to to predict a baseball player’s `Salary` based on `Years` (the number of years that he has played in the major leagues) and `Hits` (the number of hits he made in the previous year). 
+
+- Some data wrangling: We first remove observations that are missing `Salary` values, and log-transform Salary so that its distribution has more of a typical bell-shape. 
+
+- Note: `Salary` is measured in thousands of dollars.
+
+---
+#Prediction of baseball player's salary
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="examples/reg-partition-tree.png" alt="Simple decision tree" width="30%" /&gt;
+&lt;p class="caption"&gt;Simple decision tree&lt;/p&gt;
+&lt;/div&gt;
+
+---
+# What does the tree mean?
+
+- The tree represents a series of splits starting at the top of the tree. (root)
+
+- The first node (root) assigns observations with `\(Years &lt; 4.5\)` to the left branch.
+
+ - The predicted salary for these players is given by the mean response value for the players in the data set (with `\(Years &lt; 4.5.\)`)
+
+ - For such players, the mean log salary is 5.107, and so we make a prediction of `\(e^{5.107}\)` dollars (in thousands), i.e. `\(165,174\)`.
+
+
+
+---
+#Prediction of baseball player's salary
+
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="examples/reg-partition-hitters.png" alt="Divided regions" width="40%" /&gt;
+&lt;p class="caption"&gt;Divided regions&lt;/p&gt;
+&lt;/div&gt;
+
+---
+#What do the regions mean?
+
+We can write these regions as the following:
+
+1. `\(R_1: {X \mid Years &lt; 4.5}\)`
+2. `\(R_2: {X \mid Years \geq 4.5,  Hits &lt; 117.5}\)`
+3. `\(R_3: {X \mid Years \geq 4.5,  Hits \geq 117.5}.\)`
+
+---
+#Interpretation of the figure
+
+- `Years` is a significant divider in determining `Salary.` Players with less experience earn lower salaries than more experienced players. 
+
+- Given that a player is less experienced, the number of hits that he made in the previous year seems to play little role in his salary. 
+
+- Among players who have been in the major leagues for 4.5 or more years, the number of hits made in the previous year does affect salary, and players who made more hits last year tend to have higher salaries. 
+
+
+---
+# How do we build a regression tree?
+
+
+1. We divide the predictor space into a set of possible values for `\(X_1,\ldots,X_p\)` into `\(J\)` distinct and non-overlapping regions, `\(R_1,\ldots,R_J\)`.
+
+2. For every observation that falls into the region `\(R_j\)`,  we make the following prediction: the mean of the response values for the training observations in `\(R_j\)`.
+
+Suppose that in Step 1, we obtain two regions and that the response mean of the training observations in the first region is 10, while the response mean in the second region is 20. Then for a given observation that falls in the first region, we will predict a value of 10, otherwise, we will predict a value of 20.
+
+But how do we actually construct the regions? 
+
+---
+# Constructing the regions
+
+- The regions in theory could have any shape. 
+
+- However, we choose to divide the predictor space into high-dimensional rectangles or boxes (for simplicity and ease of interpretation of the resulting predictive model).
+
+Our goal is to find boxes `\(R_1, \ldots, R_J\)` that minimize the SSR (or RSS) given by 
+`$$RSS = \sum_{j=1}^J \sum_{i \in R_j} (y_i -  \bar{y}_{R_j})^2,$$` where `\(\bar{y}_{R_j}\)` is the mean response for the training observations within the `\(j\)`th box. 
+---
+## Constructing the regions (continued)
+
+1)  We first select the predictor `\(X_j\)` and the cutpoint `\(s\)` such that splitting the predictor space into the regions `\({\{X|X_j&lt;s\}}\)` and `\({\{X|X_j{\ge}s}\}\)` leads to the greatest possible reduction in RSS.
+
+2)  Repeat the process looking for the best predictor and best cutpoint to split data further (i.e., split one of the 2 previously identified regions - not the entire predictor space) minimizing the RSS within each of the resulting regions.
+
+3)  Continue until a stopping criterion is reached, e.g., each region contains at least five observations.
+
+
+---
+## But...
+
+-   The previous method may result in a tree that **overfits** the data. Why?
+
+-   Tree is too leafy (complex). SSR is expected to go down for more complex trees.
+
+-   So we will *prune* the tree efficiently to get a less complex tree. More on this to come.
+
+---
+#Application with Hitters data set
+
+Let's return to growing a regression tree for the Hitters dataset. 
+
+Recall that we use the Hitters data set to predict a baseball players `Salary` based on `Years` (the number of years that he has played in the major leagues) and `Hits` (the number of hits that he made in the previous year).
+
+There are several R packages for regression trees; the easiest one is called, simply, `tree()`.
+
+
+---
+#Application with Hitters data set
+
+
+```r
+library(ISLR)
+library(tree)
+library(tidyverse)
+attach(Hitters)
+# remove NA values
+Hitters &lt;- na.omit(Hitters)
+Salary &lt;- na.omit(Salary)
+# put salary on log scale, split sample to test/train, and fit reg tree
+Hitters &lt;- Hitters %&gt;% mutate(logsalary = log(Salary))
+trainingloc &lt;- sample(1:nrow(Hitters), 0.8*nrow(Hitters))
+training &lt;- Hitters[trainingloc, ]
+
+testloc &lt;- setdiff(1:nrow(Hitters), trainingloc) # finds the "different" rows
+test &lt;- Hitters[testloc, ]
+treefit &lt;- tree(log(Salary) ~ Years + Hits, data=training)
+```
+
+---
+Observe the summary of the above regression tree and plot the regression tree.
+
+
+```r
+summary(treefit)
+```
+
+```
+## 
+## Regression tree:
+## tree(formula = log(Salary) ~ Years + Hits, data = training)
+## Number of terminal nodes:  9 
+## Residual mean deviance:  0.2877 = 57.83 / 201 
+## Distribution of residuals:
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -2.20700 -0.28360  0.01344  0.00000  0.30780  2.35900
+```
+
+- There are 8 terminal nodes or leaves of the tree.
+- Here "deviance" is just the MSE.
+
+---
+# Plot tree 
+
+
+```r
+plot(treefit)
+text(treefit,cex=0.75) # add labels
+```
+
+![](MLLecture-31_tree_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+---
+
+```r
+preds &lt;- data.frame('salary_pred' = predict(treefit, test))
+preds %&gt;% head
+```
+
+```
+##                  salary_pred
+## -Alan Trammell      6.706516
+## -Bobby Bonilla      4.655524
+## -Bill Buckner       6.706516
+## -Bo Diaz            6.706516
+## -Carney Lansford    6.706516
+## -Craig Reynolds     6.250853
+```
+
+```r
+check &lt;- data.frame('actual' = Hitters[rownames(preds),]$logsalary, 
+                    'pred' = preds[,1], 'hits' = Hitters[rownames(preds),]$Hits)
+check %&gt;% head
+```
+
+```
+##     actual     pred hits
+## 1 6.248319 6.706516  159
+## 2 4.744932 4.655524  109
+## 3 6.655012 6.706516  168
+## 4 6.620073 6.706516  129
+## 5 7.090077 6.706516  168
+## 6 6.032287 6.250853   78
+```
+
+
+---
+
+```r
+plot(check$hits, check$actual, col='red')
+par(new=TRUE)
+plot(check$hits, check$pred,col='blue',ann=FALSE, axes=FALSE)
+```
+
+![](MLLecture-31_tree_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+
+---
+
+```r
+# compare with linear regression
+lsq &lt;- lm(training$logsalary ~ training$Hits)
+preds_lsq &lt;- lsq$coefficients[1] + lsq$coefficients[2] * test$Hits
+plot(check$hits, check$actual,col='red')
+par(new=TRUE)
+plot(check$hits, preds_lsq,col='blue',ann=FALSE, axes=FALSE)
+```
+
+![](MLLecture-31_tree_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+# Compare MSEs
+
+```r
+sum((check$actual - preds_lsq)^2)/length(check)
+```
+
+```
+## [1] 9.323892
+```
+
+```r
+sum((check$actual - check$pred)^2)/length(check)
+```
+
+```
+## [1] 4.51953
+```
+
+---
+# How to plot the regions:
+
+```r
+plot(Years,Hits,pch=16,col='grey', xlab="Years",ylab="Hits")
+partition.tree(treefit,ordvars=c("Years","Hits"),add=TRUE)
+```
+
+![](MLLecture-31_tree_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+
+---
+#Pruning 
+
+The tree package contains functions `prune.tree()` for pruning trees 
+
+The function `prune.tree()` takes a tree you fit via `tree()`, and evaluates the error of the tree and various prunings of the tree.
+
+**If you ask it for a particular size of tree, it gives you the best pruning of that size. (via the best= option)**
+
+If you don’t ask it for the best tree, it gives an object which shows the number of leaves in the pruned trees, and the error of each one. (This object can be plotted.)
+
+---
+#Hitters Data
+
+
+```r
+# train the tree
+treefit &lt;- tree(log(Salary) ~ Years + Hits, data=training, minsize=5)
+# Sequence of pruned tree sizes/errors
+treefit_n = prune.tree(treefit)
+plot(treefit_n) # error versus tree size, you can ignore the top axis
+```
+
+![](MLLecture-31_tree_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+# Get the best pruned tree
+
+
+```r
+treefit &lt;- tree(log(Salary) ~ Years + Hits, data=training)
+treefit_n = prune.tree(treefit) # returns all possible trees
+# get tree scores
+alpha = 4 # need to estimate this from data, change to improve SSR on test sample
+score = treefit_n$dev + treefit_n$size * alpha
+# size of optimal tree
+opt_tree = treefit_n$size[which(score == min(score))]
+```
+
+---
+
+
+```r
+# use the optimal size
+treefit_pruned = prune.tree(treefit,best=opt_tree) # where best specifies tree size
+# plot the pruned tree
+plot(treefit_pruned)
+text(treefit_pruned,cex=0.75,digits=3)
+```
+
+![](MLLecture-31_tree_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+
+---
+# Application: Decision Tree (binary outcome)
+
+A decision tree application for whether a user sends a like on a social media post or not. (binary outcome!)
+
+
+```r
+library(tree)
+library(dplyr)
+library(grid)
+# load data
+citdata &lt;- read.delim("https://slcladal.github.io/data/treedata.txt", header = T, sep = "\t") %&gt;%
+# convert character strings to factors
+dplyr::mutate_if(is.character, factor)
+# set.seed
+set.seed(111)        
+dtree &lt;- tree(LikeUser ~ Age + Gender + Status, data = citdata, split = "gini")
+```
+---
+
+
+```r
+# display decision tree
+plot(dtree, gp = gpar(fontsize = 8))
+# add annotation
+text(dtree, pretty = 0, all = F)
+```
+
+&lt;img src="MLLecture-31_tree_files/figure-html/unnamed-chunk-14-1.png" width="40%" /&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
