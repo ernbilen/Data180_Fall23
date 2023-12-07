@@ -53,6 +53,13 @@ Homework           |   25   |    25.0%   |
 * [The Effect ](https://theeffectbook.net) by Nick Huntington-Klein
 * [LaTeX Cheat Sheet](http://users.dickinson.edu/~richesod/latex/latexcheatsheet.pdf) and [an excellent tutorial](https://www.youtube.com/watch?v=NXW4cbHBthY) by Dave Richeson
 * [QuantEcon](https://quantecon.org)
-* [Eval link](https://forms.gle/kfQnUPepEHJ6MLXC6)
-<!--* [Live question link](https://itempool.com/ernbilen/live)
+* Eval link:
+  * COMP 180 (01)
+https://dickinson.campuslabs.com/eval-home/direct/0828964
+  * DATA 180 (01)
+https://dickinson.campuslabs.com/eval-home/direct/1828964
+  * MATH 180 (01)
+https://dickinson.campuslabs.com/eval-home/direct/2828964
+<!--* [Eval link](https://forms.gle/kfQnUPepEHJ6MLXC6)
+* [Live question link](https://itempool.com/ernbilen/live)
 * [Eval link](https://dickinson.campuslabs.com/courseeval)-->
