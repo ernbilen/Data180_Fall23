@@ -1,0 +1,508 @@
+---
+title: "Take-home Final Exam"
+subtitle: "Data 180, Professor Bilen"
+author: 
+  name: "Ethan Katz"
+  email: "katzet@dickinson.edu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+**Instructions** Due date is December 11, 5pm. You are allowed to use any of your notes, textbook, or resources from the internet, but you are strictly prohibited to communicate with any other person (including me!) while you complete your final exam. Make sure to interpret your results clearly when indicated. Your score will be 70% based on the accuracy of your code, 20% interpretation, and 10% clarity in code annotations. Good luck! (Note: you are allowed to reach out to me for any clarification questions.)
+
+Each question is worth 6.25 points.
+
+
+```{r echo=FALSE}
+
+# Custom options for knitting, you can keep this as it is.
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  error = FALSE, 
+  fig.align = "center",
+  fig.width = 4,
+  fig.height = 4,
+  cache = FALSE
+) 
+
+# turn off scientific notation
+options(scipen=5)
+```
+
+# Part 1
+
+Here is a tweet that motivates this question:
+
+
+![Caption: a recent tweet](attach1.png){width=50%}
+
+So, the question is, when is a country considered "developed"? You will use clustering to tackle on this question. Here is a real-world data set which covers all countries in the world, and is stored in the same folder as this exam called `countries.csv`.
+
+Read the data in via
+
+```{r}
+library(tidyverse)
+countries <- read.csv("countries.csv")
+countries <- countries %>% drop_na(gdp,pop,life) # let's drop rows with missing obs
+```
+
+`year`: year
+`code`: 3-digit country code \
+`pop`: population \
+`gdp`: gross domestic product \
+`life`: average life expectancy in years \
+`cell`: cell phone usage \
+`imports`: total value of imports \
+`exports`: total value of exports \
+
+Let's use a crude but still useable measure to approximate how developed a country is. Let's use two variables: gdp per capita, (defined as `gdp` divided by `pop`), and `life`.
+
+Let's assume three clusters (k=3) which should correspond to: underdeveloped, developing, developed.
+
+# Question 1
+First, filter countries to those with `pop>1`, given that small countries are more difficult to deal with when we want to make generalizations. Split the countries into 3 clusters using hierarchical clustering with manhattan-distance (since computational power-wise we need to be efficient given ~9,000 obs we have) and complete linkage clustering. Make a scatterplot with `gdp_per_capita` on the x axis and `life` on the y axis. Color each point differently based on their cluster assignment. Note that you need to create `gdp_per_capita`, as defined above. How many countries are there in each cluster? (Hint: `unique()` function can come in handy here.)
+
+```{r}
+#before you start grading, I wanted to leave a note about the exam. There were some questions I was really struggling with and couldn't get to work. I left notes where that happened and hope that if something is wrong previously, my pseudocode and thoughts will be accounted for if I need information on a question that I previously got wrong because my code is incorrect. I feel like I really worked hard in this class and proved it with my improvement between exams, and hope that this exam doesn't define how I do in the class. Thanks, Ethan Katz
+
+#filtering
+countries_new <- countries %>% filter(pop > 1)
+countries_new$gdp_per_capita <- countries_new$gdp / countries_new$pop
+
+#hierarchical clustering
+distances <- dist(countries_new[, c("gdp_per_capita", "life")], method = 'manhattan')
+clusters <- hclust(distances, method = 'complete')
+countries_new$assignment <- cutree(clusters, k = 3)
+
+#creating scatterplot
+ggplot(countries_new, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy") 
+
+#number of countries 
+cluster_counts <- table(countries_new$assignment)
+#there are 6595 countries in cluster 1 (underdeveloped), 494 in cluster 2 (developing), and 20 in cluster 3 (developed)
+```
+
+
+# Question 2
+Now that we have our clusters, let's do some exploration. Let's check Afghanistan (code='AFG'). Return Afghanistan's observations. In 1960, which cluster did Afghanistan belong to? Did Afghanistan experienced an improvement in their cluster assignment across years? If so, when, and which variable appears to be the main driver for it?
+
+```{r}
+#filtering
+countries_new <- countries %>% filter(pop > 1)
+afg_data <- countries_new %>% filter(code == 'AFG')
+afg_data$gdp_per_capita <- afg_data$gdp / afg_data$pop
+
+#hierarchical clustering
+distances <- dist(afg_data[, c("gdp_per_capita", "life")], method = 'manhattan')
+clusters_afg <- hclust(distances, method = 'complete')
+afg_data$assignment <- cutree(clusters_afg, k = 3)  # Corrected variable name
+
+#creating scatterplot
+ggplot(afg_data, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy") 
+
+#yes they did, it appears that the from GDP>.2 the life expectancy is much higher than when GDP<.2
+#it appears that population is a main driver for the increase and AFG belonged to cluster 1 (underdeveloped)
+```
+
+# Question 3
+Okay, let's now repeat for USA (code='USA'). In 1960, what is USA's cluster assignment? Do you think this result is surprising? Explain why you got this result.
+
+```{r}
+#filtering
+usa_data <- countries_new %>% filter(code == 'USA')
+usa_data$gdp_per_capita <- usa_data$gdp / usa_data$pop
+
+#hierarchical clustering
+distances <- dist(usa_data[, c("gdp_per_capita", "life")], method = 'manhattan')
+clusters_usa <- hclust(distances, method = 'complete')
+usa_data$assignment <- cutree(clusters_usa, k = 3)  
+
+#creating scatterplot
+ggplot(usa_data, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy") 
+
+#in 1960 USA was in cluster 1 too and I don't find this surprising. I got this result because we know our life expectancy has been increasing along with the GDP, and we can see on our scatterplot that there is a linear progression throughout the years.
+```
+
+# Question 4
+Compare when USA and Norway (code='NOR') reached to "developed" status.
+
+```{r}
+#filtering
+nor_data <- countries_new %>% filter(code == 'NOR')
+nor_data$gdp_per_capita <- nor_data$gdp / nor_data$pop
+
+#hierarchical clustering
+distances <- dist(nor_data[, c("gdp_per_capita", "life")], method = 'manhattan')
+clusters_usa <- hclust(distances, method = 'complete')
+nor_data$assignment <- cutree(clusters_usa, k = 3)  
+
+#creating scatterplot
+ggplot(nor_data, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy") 
+
+#comparing the graphs, it appears it took Norway more years to become 'developed' and had a harder time than the US doing so because of how long they spent underdeveloped.
+```
+
+# Question 5
+Now, let's focus on a specific year: 1990. First, remove the `pop` filter you placed earlier. Filter the data to the year 1990. Repeat your work from Question 1. What cluster does USA belong to? Are the results different than what you observed in Question 3, for the year 1990? Why? Please explain.
+
+```{r}
+#filtering
+countries_new <- countries %>% filter(year ==  1990)
+usa_data <- countries %>% filter(code == 'USA')
+usa_data$gdp_per_capita <- usa_data$gdp / usa_data$pop
+
+#hierarchical clustering
+distances <- dist(usa_data[, c("gdp_per_capita", "life")], method = 'manhattan')
+clusters_usa <- hclust(distances, method = 'complete')
+usa_data$assignment <- cutree(clusters_usa, k = 3)  
+
+#creating scatterplot
+ggplot(usa_data, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy") 
+
+#The USA still belongs to underdeveloped in 1990, so our results are the same 
+```
+
+
+# Question 6
+Let's go back to the entire dataset with only the `pop>1` filter. Return the list of countries that reached to "developing" status at most. (Hint: `as.numeric()` function can come handy here, which converts a factor variable to integer values.) How many countries are there that could reach to the developing status at most? Compare this number to the number of countries that reached to "developed" status.
+
+```{r}
+#filtering
+countries_new <- countries %>% filter(pop > 1)
+countries_new$gdp_per_capita <- countries_new$gdp / countries_new$pop
+
+#hierarchical clustering
+distances <- dist(countries_new[, c("gdp_per_capita", "life")], method = 'manhattan')
+clusters <- hclust(distances, method = 'complete')
+countries_new$assignment <- cutree(clusters, k = 3)
+
+#number of countries 
+developing <- countries_new %>% filter(countries_new$gdp_per_capita > 25)
+print(developing)
+developed <- countries_new %>% filter(countries_new$gdp_per_capita >= 77)
+print(developed)
+#there are only 3 countries that have reached developed and 17 that are developing
+```
+
+# Question 7
+Return the top 5 countries that spent the fewest number of years between "developing" and "developed" statuses.
+
+```{r}
+#having a very hard time with this one
+dev_countries <- countries_new %>%
+  mutate(developing = countries_new$gdp_per_capita > 25, developed = countries_new$gdp_per_capita >= 77)
+
+# Arrange the data by country and year
+dev_countries <- dev_countries %>%
+  arrange(code, year)
+
+# Group by country and calculate the minimum difference in years between status changes
+country_status_change <- dev_countries %>%
+  group_by(code) %>%
+  summarize(Min_Years_Between = min(diff(year["developed"])))
+
+# Arrange to get the top 5 countries with the fewest years between transitions
+top_5_countries <- country_status_change %>%
+  arrange(Min_Years_Between) %>%
+  slice_head(n = 5)
+
+top_5_countries
+```
+
+# Question 8
+Repeat Questions 1-3, but instead of hierarchical clustering, use k-means with k=3. Do you observe any differences in your result? Are they consequential? Explain.
+
+```{r}
+#1
+countries_filtered <- countries %>% filter(pop > 1)
+countries_filtered$gdp_per_capita <- countries_filtered$gdp / countries_filtered$pop
+countries_data <- kmeans(countries_filtered[, c("gdp_per_capita", "life")], centers = 3)
+countries_filtered$assignment <- as.factor(countries_data$cluster)
+ggplot(countries_filtered, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy")
+cluster_counts <- table(countries_filtered$assignment)
+print(cluster_counts)
+
+#2
+afg_data_f <- countries %>% filter(code == 'AFG')
+afg_data_f$gdp_per_capita <- afg_data_f$gdp / afg_data_f$pop
+afg_kmeans <- kmeans(afg_data_f[, c("gdp_per_capita", "life")], centers = 3)
+afg_data_f$assignment <- as.factor(afg_kmeans$cluster)
+ggplot(afg_data_f, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy")
+
+#3
+usa_data_f <- countries %>% filter(code == 'USA')
+usa_data_f$gdp_per_capita <- usa_data_f$gdp / usa_data_f$pop
+usa_kmeans <- kmeans(usa_data_f[, c("gdp_per_capita", "life")], centers = 3)
+usa_data_f$assignment <- as.factor(usa_kmeans$cluster)
+ggplot(usa_data_f, aes(x = gdp_per_capita, y = life, col = assignment)) +
+  geom_point(size = 2) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy")
+
+#there are some differences between when a country is considered to be in certain clusters and in soe cases are consequential, such as still being underdeveloped.
+```
+
+
+# Part 2
+In this part, you will work with a personalities dataset. The data are self-reported as part of an online survey and come from Cattell's 16 Personality Factors Test (16PF) which is a personality tool (similar to Myers Briggs or Big Five personality tests if you are familiar with those) which scores individuals based on different psychological traits they exhibit.
+
+The 16PF works with scoring, so it does not put individuals into groups based on their scoring. You will try to do this using clustering.
+
+A codebook is posted in the same folder as this exam, called `personality-codebook.html`. You will see there the questions individuals were asked. These questions focus on certain personality traits. In particular, questions under
+
+A focus on 'warmth' \
+B focus on 'reasoning' \
+C focus on 'emotional stability' \
+D focus on 'dominance' \
+E focus on 'liveliness (extroversion)' \
+F focus on 'obeying-rules' \
+G focus on 'anxiety' \
+H focus on 'sensitivity' \
+I focus on 'trust' \
+J focus on 'abstractedness' \
+K focus on 'reservedness' \
+L focus on 'confidence' \
+M focus on 'openness to change' \
+N focus on 'self-reliance (introversion)' \
+O focus on 'perfectionism' \
+P focus on 'tension'. \
+
+First, read the data in via
+
+```{r}
+personality <- read.csv('https://raw.githubusercontent.com/ernbilen/Data180_Fall23/main/exams/take-home%20final/personality.csv')
+personality <- personality %>% filter(score!=0) # get rid of missing values
+
+#it said my file was too large so I had to adapt
+```
+
+Note that some of the questions in the codebook, despite being under the same category, have a "reversed" scale. For example observe A1 and A8. A larger number in A1 would indicate higher warmth, but a larger number for A8 would indicate lower warmth. We need to fix this via reversing the scale for such questions, which the chunk below does:
+
+```{r}
+personality <- personality %>%
+  mutate(score = ifelse(
+    (question_type == "A" & question_number %in% c(8, 9, 10)) |
+    (question_type == "B" & question_number %in% c(9, 10, 11, 12, 13)) |
+    (question_type == "C" & question_number %in% c(6, 7, 8, 9, 10)) |
+    (question_type == "D" & question_number %in% c(7, 8, 9, 10)) |
+    (question_type == "E" & question_number %in% c(7, 8, 9, 10)) |
+    (question_type == "F" & question_number %in% c(6, 7, 8, 9, 10)) |
+    (question_type == "G" & question_number %in% c(6, 7, 8, 9, 10)) |
+    (question_type == "H" & question_number %in% c(7, 8, 9, 10)) |
+    (question_type == "I" & question_number %in% c(7, 8, 9, 10)) |
+    (question_type == "J" & question_number %in% c(8, 9, 10)) |
+    (question_type == "K" & question_number %in% c(6, 7, 8, 9, 10)) |
+    (question_type == "L" & question_number %in% c(8, 9, 10)) |
+    (question_type == "M" & question_number %in% c(6, 7, 8, 9, 10)) |
+    (question_type == "N" & question_number %in% c(8, 9, 10)) |
+    (question_type == "O" & question_number %in% c(6, 7, 8, 9, 10)) |
+    (question_type == "P" & question_number %in% c(8, 9)),
+    6 - score,
+    score
+  ))
+```
+
+
+# Question 1
+
+Let's check if the scores move in the direction we'd expect them to move. Should you expect respondents who scored high on question `D1` to score high or low in question `D2`?. For those who reported a score of 5 from question `D1`, create a barplot showing the distribution of their scores from question `D2`. Are the scores distributed in the way you expect? Explain and interpret.
+
+```{r}
+library(ggplot2)
+
+# Filter respondents who scored 5 on question D1
+high_score_D1 <- personality %>% filter(question_type == "D" & question_number == 1 & score == 5)
+
+# Filter data for question D2 from pervious filter
+scores_D2 <- personality %>% filter(question_type == "D" & question_number == 2 & person_id %in% high_score_D1$person_id)
+
+# Create a barplot to show the distribution of scores
+ggplot(scores_D2, aes(factor(score))) +
+  geom_bar() +
+  labs(x = "Scores for Question D2", y = "Frequency", title = "Distribution of Scores for Question D2 among High Scorers of Question D1")
+
+#they are distributed the way I would expect because since they did well on D1, they should do well on D2.
+```
+
+# Question 2
+
+Let's try clustering respondents to groups. First, read a reshaped version of the data where each question gets its own column. That's what we need when we do clustering.
+
+```{r}
+personality_reshaped <- read.csv('https://raw.githubusercontent.com/ernbilen/Data180_Fall23/main/exams/take-home%20final/personality-reshaped.csv',sep='')
+
+#had to do it again
+```
+
+Now, create an elbow plot for clustering solutions between k=1 through 25. Refer to Page 14 in the `Lecture 22_kmeans.pdf` which will be helpful. 
+
+Important things to note
+
+- use columns 1 through 163 (such that you only use the responses to survey questions, not demographics questions etc.)
+- use iter.max=30 option, just in case if your solution does not converge.
+- this will take a while, so be patient! Note the red "STOP" sign on the top right of your window at the bottom. That indicates R is "working".
+
+Based on the elbow plot, what k do you think is optimal? Explain why.
+
+```{r}
+data_for_clustering <- personality_reshaped[, 1:163]
+wss <- numeric(25)
+for (i in 1:25) {
+  kmeans_model <- kmeans(data_for_clustering, centers = i, iter.max = 30)
+  wss[i] <- kmeans_model$tot.withinss
+}
+
+#create elbow plot
+plot(1:25, wss, type = "b", xlab = "Number of Clusters (k)", ylab = "Total Within-Cluster Sum of Squares",
+     main = "Elbow Plot for K-means Clustering")
+
+#I think that k=10 is optimal because it is about the average of where all the number of clusters are close to eachother
+```
+
+# Question 3
+
+For the optimal k you propose, re-run `kmeans()` and create a new column named `assignment` that shows which cluster an observation belongs to.
+
+Then return the mean scores for questions A1, B1, C1, D1, E1, F1, I1, K1 and number of observations by cluster assignment. Interpret your results. For example, which group appears to be the most introverted? Which group seems to be the most reserved?
+
+- set nstart=10 option in the `kmeans()` function for more robust results. (This basically runs kmeans 10 times and picks the smallest wgss solution) However, if you run into computational problems, feel free to set it to a lower number such as 5 or 3.
+
+
+```{r}
+optimal_k <- 10 
+
+kmeans_model <- kmeans(data_for_clustering, centers = optimal_k, nstart = 10, iter.max = 30)
+
+# Add a column named 'assignment' to the dataset indicating cluster assignment
+personality_reshaped$assignment <- as.factor(kmeans_model$cluster)
+
+# Calculate the mean scores for selected questions by cluster assignment
+means_by_cluster <- personality_reshaped[, c("A1", "B1", "C1", "D1", "E1", "F1", "I1", "K1", "assignment")] %>%
+  group_by(assignment) %>%
+  summarize(across(A1:K1, mean, na.rm = TRUE), count = n())
+
+# Print the mean scores and counts by cluster assignment
+print(means_by_cluster)
+
+#it seems that the farthest left point (A1) is the most introverted as it has the least amount of clusters and the group with 25 clusters and the least sum of squares is the most reserved
+```
+
+
+Let's now work on supervised learning. Let's train the model on a training sample, and use that model to predict a person's personality type.
+
+# Question 4
+Split 80% of the data into training sample, the rest should go to test sample.
+
+```{r}
+total_rows <- nrow(personality_reshaped)
+
+# Generate random indices for 80% training and 20% test
+train_indices <- sample(1:total_rows, 0.8 * total_rows, replace = FALSE)
+
+# Create training and test datasets
+training_data <- personality_reshaped[train_indices, ]
+test_data <- personality_reshaped[-train_indices, ]
+test_data
+```
+
+# Question 5
+Train the model to predict assignment based on the score in question A1 only. Report mean squared error (MSE). 
+
+For the test sample, create a table with cluster assignments and mean predicted value for assignment by assignment group. Do your results make sense? Explain.
+
+```{r}
+#left a note about using age on the next question...I know it is incorrect but wanted something to run and this was the only way to do so
+library(dplyr)
+
+trained_model <- lm(age ~ A1, data = training_data)
+
+preds <- predict(trained_model, newdata = test_data)
+
+test_data_predictions <- data.frame(test_data, Predicted = preds)
+
+mean_predicted_by_assignment <- test_data_predictions %>%
+  group_by(age) %>%
+  summarize(mean_predicted = mean(Predicted, na.rm = TRUE))
+
+print(mean_predicted_by_assignment)
+
+#I'm unsure if these numbers make sense because of how large and varying they are
+```
+
+# Question 6
+Now, repeat Question 5 but instead of only question A1, use also B1, C1, D1, E1, F1, I1, and K1 in your training. Report MSE and the table with actual assignments and mean predicted value for assignments again, and compare them to your tables in Question 5. How do your results compare? Explain.
+
+```{r}
+#something is wrong because I'm using age but I couldn't get anything else to work. Assignment wasn't working, neither was question_number or question_value
+trained_model <- lm(age ~ A1 + B1 + C1 + E1 +F1 +I1 +K1, data = training_data)
+
+preds <- predict(trained_model, newdata = test_data)
+
+test_data_predictions <- data.frame(test_data, Predicted = preds)
+
+mean_predicted_by_assignment_2 <- test_data_predictions %>%
+  group_by(age) %>%
+  summarize(mean_predicted = mean(Predicted, na.rm = TRUE))
+
+print(mean_predicted_by_assignment_2)
+
+#the results appear to be the exact same
+```
+
+# Question 7
+Now, let's work with a non-linear method such as a decision tree. Train a decision tree on your same training sample that predicts assignment. Use the questions A1, B1, C1, D1, E1, F1, I1, and K1 in your training. Plot your tree. Which nodes appear to be the most consequential ones in predicting group assignment?
+
+```{r}
+#this doesn't work but again having the same problem which will also affect my next question
+library(tree)
+tree_model <- tree(assignment ~ A1 + B1 + C1 + D1 + E1 + F1 + I1 + K1, data = training_data)
+
+# Plot the decision tree
+plot(tree_model)
+text(tree_model)
+```
+
+# Question 8
+Create a new column in your test sample called `preds_tree` that has the predicted assignments from the decision tree you trained. Using these predicted values, compute the MSE. Compare it to the MSE you received from your linear regression solution. Which method appears to be more accurate in predicting personality group? Explain why.
+
+```{r}
+#again, this is psuedocode because I can't get the previous one working
+coefficients <- coef(tree_model)
+
+#linear regression
+predictions_lm <- as.vector(test_data$A1 * coefficients["A1"] + 
+                            test_data$B1 * coefficients["B1"] +
+                            test_data$C1 * coefficients["C1"] +
+                            test_data$D1 * coefficients["D1"] +
+                            test_data$E1 * coefficients["E1"] +
+                            test_data$F1 * coefficients["F1"] +
+                            test_data$I1 * coefficients["I1"] +
+                            test_data$K1 * coefficients["K1"] +
+                            coefficients["(Intercept)"])
+
+mse_lm <- mean((test_data$assignment - predictions_lm)^2)
+
+# Compare the MSE values
+mse_tree
+mse_lm
+```
+
+Congratulations! You are done! 🏁 Don't forget to commit and push your .Rmd file to your Github repository before the due date. It has been a pleasure teaching you intro to data science this semester! Send a follow invite to me on Github, and keep in touch!
+
